@@ -1,0 +1,17 @@
+api_key: https://55e8-115-78-13-71.ngrok-free.app/
+#api_key: dummy
+llm_model: ollama
+#llm_model: openai
+base_url: https://55e8-115-78-13-71.ngrok-free.app/
+#base_url: https://678f-34-55-75-42.ngrok-free.app/v1
+llm_model_name: qwen3:32b
+#llm_model_name: /kaggle/tmp/Qwen3-32B-AWQ
+embedding_models: maidalun1020/bce-embedding-base_v1
+embedding_type: local
+context_length: 120000
+embedding_url: ''
+rerank_model: maidalun1020/bce-reranker-base_v1
+temperature: 0.8
+history_len: 5
+timeout: 12000
+proxies: {}

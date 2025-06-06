@@ -1,0 +1,754 @@
+<!DOCTYPE HTML>
+<html lang="en" class="hacktricks-light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Crypto CTFs Tricks - HackTricks</title>
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/pagetoc.css">
+        <link rel="stylesheet" href="../theme/tabs.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var lang = "en";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "hacktricks-dark" : "hacktricks-light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('hacktricks-light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var body = document.querySelector("body");
+            if (document.body.clientWidth >= 550) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+            <div id="search-wrapper" class="hidden">
+                <div id="search-modal">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <span class="fa fa-search"></span>
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="menu-bar-container">
+                        <div class="left-buttons">
+                            <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </label>
+                            <a href="/">
+                                <h1 class="menu-title"><img src="../../../../../images/CLOUD-web-logo.png" alt="" style="width:auto;height:30px;vertical-align:middle;margin-right:5px;">HackTricks</h1>
+                            </a>
+
+                        </div>
+
+
+                        <div class="right-buttons">
+                            <div id="menubar-collapse">
+                                <a class="menu-bar-link" href="https://training.hacktricks.xyz" target="_blank">
+                                    Hacktricks Training
+                                </a>
+                                <a class="menu-bar-link" href="https://twitter.com/hacktricks_live" target="_blank">
+                                    Twitter
+                                </a>
+                                <a class="menu-bar-link" href="https://www.linkedin.com/company/hacktricks" target="_blank">
+                                    Linkedin
+                                </a>
+                                <a class="menu-bar-link" href="https://github.com/sponsors/carlospolop" target="_blank">
+                                    Sponsor
+                                </a>
+                            </div>
+                            <div class="icons">
+                                <div id="menubar-collapse-toggle" class="icon-button" type="button" title="Toggle menu bar" aria-label="Toggle Menu bar" aria-expanded="false" aria-controls="collapse">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                    <div id="menubar-collapse-popup" class="menubar-collapse-popup" aria-label="Menu" role="menu">
+                                        <a href="https://training.hacktricks.xyz" target="_blank" role="menuitem" class="menu-bar-link">Hacktricks Training</a>
+                                        <a href="https://twitter.com/hacktricks_live" target="_blank" role="menuitem" class="menu-bar-link">Twitter</a>
+                                        <a href="https://www.linkedin.com/company/hacktricks" target="_blank" role="menuitem" class="menu-bar-link">Linkedin</a>
+                                        <a href="https://github.com/sponsors/carlospolop" target="_blank" role="menuitem" class="menu-bar-link">Sponsor</a>
+                                    </div>
+                                </div>
+
+                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                    <i class="fa fa-search"></i>
+                                </button>
+
+                                <div id="menubar-languages-toggle" class="icon-button" type="button" title="Translations" aria-label="Toggle Tanslations" aria-expanded="false" aria-controls="translations">
+                                    <i class="fa fa-globe"></i>
+                                    <span class="menu-bar-link">Translations</span>
+                                    
+                                    <div id="menubar-languages-popup" class="menubar-languages-popup" aria-label="Language menu" role="language menu">
+                                        <button id="af" role="menuitem" class="menu-bar-link">Afrikaans</button>
+                                        <button id="zh" role="menuitem" class="menu-bar-link">Chinese</button>
+                                        <button id="en" role="menuitem" class="menu-bar-link">English</button>
+                                        <button id="fr" role="menuitem" class="menu-bar-link">French</button>
+                                        <button id="de" role="menuitem" class="menu-bar-link">German</button>
+                                        <button id="el" role="menuitem" class="menu-bar-link">Greek</button>
+                                        <button id="hi" role="menuitem" class="menu-bar-link">Hindi</button>
+                                        <button id="it" role="menuitem" class="menu-bar-link">Italian</button>
+                                        <button id="ja" role="menuitem" class="menu-bar-link">Japanese</button>
+                                        <button id="ko" role="menuitem" class="menu-bar-link">Korean</button>
+                                        <button id="pl" role="menuitem" class="menu-bar-link">Polish</button>
+                                        <button id="pt" role="menuitem" class="menu-bar-link">Portuguese</button>
+                                        <button id="sr" role="menuitem" class="menu-bar-link">Serbian</button>
+                                        <button id="es" role="menuitem" class="menu-bar-link">Spanish</button>
+                                        <button id="sw" role="menuitem" class="menu-bar-link">Swahili</button>
+                                        <button id="tr" role="menuitem" class="menu-bar-link">Turkish</button>
+                                        <button id="uk" role="menuitem" class="menu-bar-link">Ukrainian</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="container" class="container">
+                    <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+                        <!-- populated by js -->
+                        <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+                        <noscript>
+                            <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                        </noscript>
+                    </nav>
+                    <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                    <script>
+                        document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                        document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                        Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                            link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                        });
+                    </script>
+
+                    <div id="content" class="content">
+                        <main>
+                            <div class="mobilesponsor-wrapper">
+
+                            <a class="mobilesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="mobilesponsor-title">
+                                </div>
+                                <div class="mobilesponsor-description">
+                                </div>
+                                <div class="mobilesponsor-cta"></div>
+                            </a>
+                            </div>
+                            <style>
+.mdbook-alerts {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-left: 0.25em solid var(--mdbook-alerts-color);
+}
+
+.mdbook-alerts > *:first-child {
+  margin-top: 0;
+}
+
+.mdbook-alerts > *:last-child {
+  margin-bottom: 0;
+}
+
+.mdbook-alerts-title {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  line-height: 1;
+  color: var(--mdbook-alerts-color);
+  text-transform: capitalize;
+}
+
+.mdbook-alerts-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.2em;
+  background-color: currentColor;
+  -webkit-mask: no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+  -webkit-mask-image: var(--mdbook-alerts-icon);
+  mask-image: var(--mdbook-alerts-icon);
+}
+
+.mdbook-alerts-note {
+  --mdbook-alerts-color: rgb(9, 105, 218);
+  /* https://icon-sets.iconify.design/material-symbols/info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16v-4q0-.425-.288-.712T12 11q-.425 0-.712.288T11 12v4q0 .425.288.713T12 17m0-8q.425 0 .713-.288T13 8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8q0 .425.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-tip {
+  --mdbook-alerts-color: rgb(26, 127, 55);
+  /* https://icon-sets.iconify.design/material-symbols/lightbulb-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22m-3-3q-.425 0-.712-.288T8 18q0-.425.288-.712T9 17h6q.425 0 .713.288T16 18q0 .425-.288.713T15 19zm-.75-3q-1.725-1.025-2.738-2.75T4.5 9.5q0-3.125 2.188-5.312T12 2q3.125 0 5.313 2.188T19.5 9.5q0 2.025-1.012 3.75T15.75 16zm.6-2h6.3q1.125-.8 1.738-1.975T17.5 9.5q0-2.3-1.6-3.9T12 4Q9.7 4 8.1 5.6T6.5 9.5q0 1.35.613 2.525T8.85 14M12 14"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-important {
+  --mdbook-alerts-color: rgb(130, 80, 223);
+  /* https://icon-sets.iconify.design/material-symbols/chat-info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 7q.425 0 .713-.288T13 6q0-.425-.288-.712T12 5q-.425 0-.712.288T11 6q0 .425.288.713T12 7m0 8q.425 0 .713-.288T13 14v-4q0-.425-.288-.712T12 9q-.425 0-.712.288T11 10v4q0 .425.288.713T12 15m-6 3l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-warning {
+  --mdbook-alerts-color: rgb(154, 103, 0);
+  /* https://icon-sets.iconify.design/material-symbols/warning-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M2.725 21q-.275 0-.5-.137t-.35-.363q-.125-.225-.137-.488t.137-.512l9.25-16q.15-.25.388-.375T12 3q.25 0 .488.125t.387.375l9.25 16q.15.25.138.513t-.138.487q-.125.225-.35.363t-.5.137zm1.725-2h15.1L12 6zM12 18q.425 0 .713-.288T13 17q0-.425-.288-.712T12 16q-.425 0-.712.288T11 17q0 .425.288.713T12 18m0-3q.425 0 .713-.288T13 14v-3q0-.425-.288-.712T12 10q-.425 0-.712.288T11 11v3q0 .425.288.713T12 15m0-2.5"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-caution {
+  --mdbook-alerts-color: rgb(207, 34, 46);
+  /* https://icon-sets.iconify.design/material-symbols/brightness-alert-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16q0-.425-.288-.712T12 15q-.425 0-.712.288T11 16q0 .425.288.713T12 17m0-4q.425 0 .713-.288T13 12V8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8v4q0 .425.288.713T12 13m-3.35 7H6q-.825 0-1.412-.587T4 18v-2.65L2.075 13.4q-.275-.3-.425-.662T1.5 12q0-.375.15-.737t.425-.663L4 8.65V6q0-.825.588-1.412T6 4h2.65l1.95-1.925q.3-.275.663-.425T12 1.5q.375 0 .738.15t.662.425L15.35 4H18q.825 0 1.413.588T20 6v2.65l1.925 1.95q.275.3.425.663t.15.737q0 .375-.15.738t-.425.662L20 15.35V18q0 .825-.587 1.413T18 20h-2.65l-1.95 1.925q-.3.275-.662.425T12 22.5q-.375 0-.737-.15t-.663-.425zm.85-2l2.5 2.5l2.5-2.5H18v-3.5l2.5-2.5L18 9.5V6h-3.5L12 3.5L9.5 6H6v3.5L3.5 12L6 14.5V18zm2.5-6"%2F%3E%3C%2Fsvg%3E');
+}
+
+</style>
+<style>
+div.codeblock_filename_container + pre {
+  margin-top: 0;
+}
+
+span.codeblock_filename_inner {
+  border-radius: 0.4rem 0.4rem 0 0;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  font-family: var(--mono-font) !important;
+  font-size: var(--code-font-size);
+}
+
+</style>
+<h1 id="crypto-ctfs-tricks"><a class="header" href="#crypto-ctfs-tricks">Crypto CTFs Tricks</a></h1>
+<p>Reading time: 6 minutes</p>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+<h2 id="online-hashes-dbs"><a class="header" href="#online-hashes-dbs">Online Hashes DBs</a></h2>
+<ul>
+<li><em><strong>Google it</strong></em></li>
+<li><a href="http://hashtoolkit.com/reverse-hash?hash=4d186321c1a7f0f354b297e8914ab240">http://hashtoolkit.com/reverse-hash?hash=4d186321c1a7f0f354b297e8914ab240</a></li>
+<li><a href="https://www.onlinehashcrack.com">https://www.onlinehashcrack.com/</a></li>
+<li><a href="https://crackstation.net">https://crackstation.net/</a></li>
+<li><a href="https://md5decrypt.net">https://md5decrypt.net/</a></li>
+<li><a href="https://www.onlinehashcrack.com">https://www.onlinehashcrack.com</a></li>
+<li><a href="https://gpuhash.me">https://gpuhash.me/</a></li>
+<li><a href="https://hashes.org/search.php">https://hashes.org/search.php</a></li>
+<li><a href="https://www.cmd5.org">https://www.cmd5.org/</a></li>
+<li><a href="https://hashkiller.co.uk/Cracker/MD5">https://hashkiller.co.uk/Cracker/MD5</a></li>
+<li><a href="https://www.md5online.org/md5-decrypt.html">https://www.md5online.org/md5-decrypt.html</a></li>
+</ul>
+<h2 id="magic-autosolvers"><a class="header" href="#magic-autosolvers">Magic Autosolvers</a></h2>
+<ul>
+<li><a href="https://github.com/Ciphey/Ciphey"><strong>https://github.com/Ciphey/Ciphey</strong></a></li>
+<li><a href="https://gchq.github.io/CyberChef/">https://gchq.github.io/CyberChef/</a> (Magic module)</li>
+<li><a href="https://github.com/dhondta/python-codext">https://github.com/dhondta/python-codext</a></li>
+<li><a href="https://www.boxentriq.com/code-breaking">https://www.boxentriq.com/code-breaking</a></li>
+</ul>
+<h2 id="encoders"><a class="header" href="#encoders">Encoders</a></h2>
+<p>Most of encoded data can be decoded with these 2 ressources:</p>
+<ul>
+<li><a href="https://www.dcode.fr/tools-list">https://www.dcode.fr/tools-list</a></li>
+<li><a href="https://gchq.github.io/CyberChef/">https://gchq.github.io/CyberChef/</a></li>
+</ul>
+<h3 id="substitution-autosolvers"><a class="header" href="#substitution-autosolvers">Substitution Autosolvers</a></h3>
+<ul>
+<li><a href="https://www.boxentriq.com/code-breaking/cryptogram">https://www.boxentriq.com/code-breaking/cryptogram</a></li>
+<li><a href="https://quipqiup.com">https://quipqiup.com/</a> - Very good !</li>
+</ul>
+<h4 id="caesar---rotx-autosolvers"><a class="header" href="#caesar---rotx-autosolvers">Caesar - ROTx Autosolvers</a></h4>
+<ul>
+<li><a href="https://www.nayuki.io/page/automatic-caesar-cipher-breaker-javascript">https://www.nayuki.io/page/automatic-caesar-cipher-breaker-javascript</a></li>
+</ul>
+<h4 id="atbash-cipher"><a class="header" href="#atbash-cipher">Atbash Cipher</a></h4>
+<ul>
+<li><a href="http://rumkin.com/tools/cipher/atbash.php">http://rumkin.com/tools/cipher/atbash.php</a></li>
+</ul>
+<h3 id="base-encodings-autosolver"><a class="header" href="#base-encodings-autosolver">Base Encodings Autosolver</a></h3>
+<p>Check all these bases with: <a href="https://github.com/dhondta/python-codext">https://github.com/dhondta/python-codext</a></p>
+<ul>
+<li><strong>Ascii85</strong>
+<ul>
+<li><code>BQ%]q@psCd@rH0l</code></li>
+</ul>
+</li>
+<li><strong>Base26</strong> [<em>A-Z</em>]
+<ul>
+<li><code>BQEKGAHRJKHQMVZGKUXNT</code></li>
+</ul>
+</li>
+<li><strong>Base32</strong> [<em>A-Z2-7=</em>]
+<ul>
+<li><code>NBXWYYLDMFZGCY3PNRQQ====</code></li>
+</ul>
+</li>
+<li><strong>Zbase32</strong> [<em>ybndrfg8ejkmcpqxot1uwisza345h769</em>]
+<ul>
+<li><code>pbzsaamdcf3gna5xptoo====</code></li>
+</ul>
+</li>
+<li><strong>Base32 Geohash</strong> [<em>0-9b-hjkmnp-z</em>]
+<ul>
+<li><code>e1rqssc3d5t62svgejhh====</code></li>
+</ul>
+</li>
+<li><strong>Base32 Crockford</strong> [<em>0-9A-HJKMNP-TV-Z</em>]
+<ul>
+<li><code>D1QPRRB3C5S62RVFDHGG====</code></li>
+</ul>
+</li>
+<li><strong>Base32 Extended Hexadecimal</strong> [<em>0-9A-V</em>]
+<ul>
+<li><code>D1NMOOB3C5P62ORFDHGG====</code></li>
+</ul>
+</li>
+<li><strong>Base45</strong> [<em>0-9A-Z $%*+-./:</em>]
+<ul>
+<li><code>59DPVDGPCVKEUPCPVD</code></li>
+</ul>
+</li>
+<li><strong>Base58 (bitcoin)</strong> [<em>1-9A-HJ-NP-Za-km-z</em>]
+<ul>
+<li><code>2yJiRg5BF9gmsU6AC</code></li>
+</ul>
+</li>
+<li><strong>Base58 (flickr)</strong> [<em>1-9a-km-zA-HJ-NP-Z</em>]
+<ul>
+<li><code>2YiHqF5bf9FLSt6ac</code></li>
+</ul>
+</li>
+<li><strong>Base58 (ripple)</strong> [<em>rpshnaf39wBUDNEGHJKLM4PQ-T7V-Z2b-eCg65jkm8oFqi1tuvAxyz</em>]
+<ul>
+<li><code>pyJ5RgnBE9gm17awU</code></li>
+</ul>
+</li>
+<li><strong>Base62</strong> [<em>0-9A-Za-z</em>]
+<ul>
+<li><code>g2AextRZpBKRBzQ9</code></li>
+</ul>
+</li>
+<li><strong>Base64</strong> [<em>A-Za-z0-9+/=</em>]
+<ul>
+<li><code>aG9sYWNhcmFjb2xh</code></li>
+</ul>
+</li>
+<li><strong>Base67</strong> [<em>A-Za-z0-9-</em>.!~_]
+<ul>
+<li><code>NI9JKX0cSUdqhr!p</code></li>
+</ul>
+</li>
+<li><strong>Base85 (Ascii85)</strong> [<em>!"#$%&amp;'()*+,-./0-9:;&lt;=&gt;?@A-Z[\]^_`a-u</em>]
+<ul>
+<li><code>BQ%]q@psCd@rH0l</code></li>
+</ul>
+</li>
+<li><strong>Base85 (Adobe)</strong> [<em>!"#$%&amp;'()*+,-./0-9:;&lt;=&gt;?@A-Z[\]^_`a-u</em>]
+<ul>
+<li><code>&lt;~BQ%]q@psCd@rH0l~&gt;</code></li>
+</ul>
+</li>
+<li><strong>Base85 (IPv6 or RFC1924)</strong> [<em>0-9A-Za-z!#$%&amp;()*+-;&lt;=&gt;?@^</em>`{|}~_]
+<ul>
+<li><code>Xm4y</code>V_|Y(V{dF&gt;`</li>
+</ul>
+</li>
+<li><strong>Base85 (xbtoa)</strong> [<em>!"#$%&amp;'()*+,-./0-9:;&lt;=&gt;?@A-Z[\]^_`a-u</em>]
+<ul>
+<li><code>xbtoa Begin\nBQ%]q@psCd@rH0l\nxbtoa End N 12 c E 1a S 4e6 R 6991d</code></li>
+</ul>
+</li>
+<li><strong>Base85 (XML)</strong> [_0-9A-Za-y!#$()*+,-./:;=?@^`{|}~z__]
+<ul>
+<li><code>Xm4y|V{~Y+V}dF?</code></li>
+</ul>
+</li>
+<li><strong>Base91</strong> [<em>A-Za-z0-9!#$%&amp;()*+,./:;&lt;=&gt;?@[]^_`{|}~"</em>]
+<ul>
+<li><code>frDg[*jNN!7&amp;BQM</code></li>
+</ul>
+</li>
+<li><strong>Base100</strong> []
+<ul>
+<li><code>👟👦👣👘👚👘👩👘👚👦👣👘</code></li>
+</ul>
+</li>
+<li><strong>Base122</strong> []
+<ul>
+<li><code>4F ˂r0Xmvc</code></li>
+</ul>
+</li>
+<li><strong>ATOM-128</strong> [<em>/128GhIoPQROSTeUbADfgHijKLM+n0pFWXY456xyzB7=39VaqrstJklmNuZvwcdEC</em>]
+<ul>
+<li><code>MIc3KiXa+Ihz+lrXMIc3KbCC</code></li>
+</ul>
+</li>
+<li><strong>HAZZ15</strong> [<em>HNO4klm6ij9n+J2hyf0gzA8uvwDEq3X1Q7ZKeFrWcVTts/MRGYbdxSo=ILaUpPBC5</em>]
+<ul>
+<li><code>DmPsv8J7qrlKEoY7</code></li>
+</ul>
+</li>
+<li><strong>MEGAN35</strong> [<em>3G-Ub=c-pW-Z/12+406-9Vaq-zA-F5</em>]
+<ul>
+<li><code>kLD8iwKsigSalLJ5</code></li>
+</ul>
+</li>
+<li><strong>ZONG22</strong> [<em>ZKj9n+yf0wDVX1s/5YbdxSo=ILaUpPBCHg8uvNO4klm6iJGhQ7eFrWczAMEq3RTt2</em>]
+<ul>
+<li><code>ayRiIo1gpO+uUc7g</code></li>
+</ul>
+</li>
+<li><strong>ESAB46</strong> []
+<ul>
+<li><code>3sHcL2NR8WrT7mhR</code></li>
+</ul>
+</li>
+<li><strong>MEGAN45</strong> []
+<ul>
+<li><code>kLD8igSXm2KZlwrX</code></li>
+</ul>
+</li>
+<li><strong>TIGO3FX</strong> []
+<ul>
+<li><code>7AP9mIzdmltYmIP9mWXX</code></li>
+</ul>
+</li>
+<li><strong>TRIPO5</strong> []
+<ul>
+<li><code>UE9vSbnBW6psVzxB</code></li>
+</ul>
+</li>
+<li><strong>FERON74</strong> []
+<ul>
+<li><code>PbGkNudxCzaKBm0x</code></li>
+</ul>
+</li>
+<li><strong>GILA7</strong> []
+<ul>
+<li><code>D+nkv8C1qIKMErY1</code></li>
+</ul>
+</li>
+<li><strong>Citrix CTX1</strong> []
+<ul>
+<li><code>MNGIKCAHMOGLKPAKMMGJKNAINPHKLOBLNNHILCBHNOHLLPBK</code></li>
+</ul>
+</li>
+</ul>
+<p><a href="http://k4.cba.pl/dw/crypo/tools/eng_atom128c.html">http://k4.cba.pl/dw/crypo/tools/eng_atom128c.html</a> - 404 Dead: <a href="https://web.archive.org/web/20190228181208/http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html">https://web.archive.org/web/20190228181208/http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html</a></p>
+<h3 id="hackerizexs-Λ"><a class="header" href="#hackerizexs-Λ">HackerizeXS [<em>╫Λ↻├☰┏</em>]</a></h3>
+<pre><code>╫☐↑Λ↻Λ┏Λ↻☐↑Λ
+</code></pre>
+<ul>
+<li><a href="http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html">http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html</a> - 404 Dead: <a href="https://web.archive.org/web/20190228181208/http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html">https://web.archive.org/web/20190228181208/http://k4.cba.pl/dw/crypo/tools/eng_hackerize.html</a></li>
+</ul>
+<h3 id="morse"><a class="header" href="#morse">Morse</a></h3>
+<pre><code>.... --- .-.. -.-. .- .-. .- -.-. --- .-.. .-
+</code></pre>
+<ul>
+<li><a href="http://k4.cba.pl/dw/crypo/tools/eng_morse-encode.html">http://k4.cba.pl/dw/crypo/tools/eng_morse-encode.html</a> - 404 Dead: <a href="https://gchq.github.io/CyberChef/">https://gchq.github.io/CyberChef/</a></li>
+</ul>
+<h3 id="uuencoder"><a class="header" href="#uuencoder">UUencoder</a></h3>
+<pre><code>begin 644 webutils_pl
+M2$],04A/3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/3$%(
+M3TQ!2$],04A/3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/
+F3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/3$%(3TQ!2$],04A/3$$`
+`
+end
+</code></pre>
+<ul>
+<li><a href="http://www.webutils.pl/index.php?idx=uu">http://www.webutils.pl/index.php?idx=uu</a></li>
+</ul>
+<h3 id="xxencoder"><a class="header" href="#xxencoder">XXEncoder</a></h3>
+<pre><code>begin 644 webutils_pl
+hG2xAEIVDH236Hol-G2xAEIVDH236Hol-G2xAEIVDH236Hol-G2xAEIVDH236
+5Hol-G2xAEE++
+end
+</code></pre>
+<ul>
+<li><a href="https://github.com/carlospolop/hacktricks/tree/bf578e4c5a955b4f6cdbe67eb4a543e16a3f848d/crypto/www.webutils.pl/index.php?idx=xx">www.webutils.pl/index.php?idx=xx</a></li>
+</ul>
+<h3 id="yencoder"><a class="header" href="#yencoder">YEncoder</a></h3>
+<pre><code>=ybegin line=128 size=28 name=webutils_pl
+ryvkryvkryvkryvkryvkryvkryvk
+=yend size=28 crc32=35834c86
+</code></pre>
+<ul>
+<li><a href="http://www.webutils.pl/index.php?idx=yenc">http://www.webutils.pl/index.php?idx=yenc</a></li>
+</ul>
+<h3 id="binhex"><a class="header" href="#binhex">BinHex</a></h3>
+<pre><code>(This file must be converted with BinHex 4.0)
+:#hGPBR9dD@acAh"X!$mr2cmr2cmr!!!!!!!8!!!!!-ka5%p-38K26%&amp;)6da"5%p
+-38K26%'d9J!!:
+</code></pre>
+<ul>
+<li><a href="http://www.webutils.pl/index.php?idx=binhex">http://www.webutils.pl/index.php?idx=binhex</a></li>
+</ul>
+<h3 id="ascii85"><a class="header" href="#ascii85">ASCII85</a></h3>
+<pre><code>&lt;~85DoF85DoF85DoF85DoF85DoF85DoF~&gt;
+</code></pre>
+<ul>
+<li><a href="http://www.webutils.pl/index.php?idx=ascii85">http://www.webutils.pl/index.php?idx=ascii85</a></li>
+</ul>
+<h3 id="dvorak-keyboard"><a class="header" href="#dvorak-keyboard">Dvorak keyboard</a></h3>
+<pre><code>drnajapajrna
+</code></pre>
+<ul>
+<li><a href="https://www.geocachingtoolbox.com/index.php?lang=en&amp;page=dvorakKeyboard">https://www.geocachingtoolbox.com/index.php?lang=en&amp;page=dvorakKeyboard</a></li>
+</ul>
+<h3 id="a1z26"><a class="header" href="#a1z26">A1Z26</a></h3>
+<p>Letters to their numerical value</p>
+<pre><code>8 15 12 1 3 1 18 1 3 15 12 1
+</code></pre>
+<h3 id="affine-cipher-encode"><a class="header" href="#affine-cipher-encode">Affine Cipher Encode</a></h3>
+<p>Letter to num <code>(ax+b)%26</code> (<em>a</em> and <em>b</em> are the keys and <em>x</em> is the letter) and the result back to letter</p>
+<pre><code>krodfdudfrod
+</code></pre>
+<h3 id="sms-code"><a class="header" href="#sms-code">SMS Code</a></h3>
+<p><strong>Multitap</strong> <a href="https://www.dcode.fr/word-letter-change">replaces a letter</a> by repeated digits defined by the corresponding key code on a mobile <a href="https://www.dcode.fr/phone-keypad-cipher">phone keypad</a> (This mode is used when writing SMS).<br />
+For example: 2=A, 22=B, 222=C, 3=D...<br />
+You can identify this code because you will see** several numbers repeated**.</p>
+<p>You can decode this code in: <a href="https://www.dcode.fr/multitap-abc-cipher">https://www.dcode.fr/multitap-abc-cipher</a></p>
+<h3 id="bacon-code"><a class="header" href="#bacon-code">Bacon Code</a></h3>
+<p>Substitude each letter for 4 As or Bs (or 1s and 0s)</p>
+<pre><code>00111 01101 01010 00000 00010 00000 10000 00000 00010 01101 01010 00000
+AABBB ABBAB ABABA AAAAA AAABA AAAAA BAAAA AAAAA AAABA ABBAB ABABA AAAAA
+</code></pre>
+<h3 id="runes"><a class="header" href="#runes">Runes</a></h3>
+<p><img src="../images/runes.jpg" alt="" /></p>
+<h2 id="compression"><a class="header" href="#compression">Compression</a></h2>
+<p><strong>Raw Deflate</strong> and <strong>Raw Inflate</strong> (you can find both in Cyberchef) can compress and decompress data without headers.</p>
+<h2 id="easy-crypto"><a class="header" href="#easy-crypto">Easy Crypto</a></h2>
+<h3 id="xor---autosolver"><a class="header" href="#xor---autosolver">XOR - Autosolver</a></h3>
+<ul>
+<li><a href="https://wiremask.eu/tools/xor-cracker/">https://wiremask.eu/tools/xor-cracker/</a></li>
+</ul>
+<h3 id="bifid"><a class="header" href="#bifid">Bifid</a></h3>
+<p>A keywork is needed</p>
+<pre><code>fgaargaamnlunesuneoa
+</code></pre>
+<h3 id="vigenere"><a class="header" href="#vigenere">Vigenere</a></h3>
+<p>A keywork is needed</p>
+<pre><code>wodsyoidrods
+</code></pre>
+<ul>
+<li><a href="https://www.guballa.de/vigenere-solver">https://www.guballa.de/vigenere-solver</a></li>
+<li><a href="https://www.dcode.fr/vigenere-cipher">https://www.dcode.fr/vigenere-cipher</a></li>
+<li><a href="https://www.mygeocachingprofile.com/codebreaker.vigenerecipher.aspx">https://www.mygeocachingprofile.com/codebreaker.vigenerecipher.aspx</a></li>
+</ul>
+<h2 id="strong-crypto"><a class="header" href="#strong-crypto">Strong Crypto</a></h2>
+<h3 id="fernet"><a class="header" href="#fernet">Fernet</a></h3>
+<p>2 base64 strings (token and key)</p>
+<pre><code>Token:
+gAAAAABWC9P7-9RsxTz_dwxh9-O2VUB7Ih8UCQL1_Zk4suxnkCvb26Ie4i8HSUJ4caHZuiNtjLl3qfmCv_fS3_VpjL7HxCz7_Q==
+
+Key:
+-s6eI5hyNh8liH7Gq0urPC-vzPgNnxauKvRO4g03oYI=
+</code></pre>
+<ul>
+<li><a href="https://asecuritysite.com/encryption/ferdecode">https://asecuritysite.com/encryption/ferdecode</a></li>
+</ul>
+<h3 id="samir-secret-sharing"><a class="header" href="#samir-secret-sharing">Samir Secret Sharing</a></h3>
+<p>A secret is splitted in X parts and to recover it you need Y parts (<em>Y &lt;=X</em>).</p>
+<pre><code>8019f8fa5879aa3e07858d08308dc1a8b45
+80223035713295bddf0b0bd1b10a5340b89
+803bc8cf294b3f83d88e86d9818792e80cd
+</code></pre>
+<p><a href="http://christian.gen.co/secrets/">http://christian.gen.co/secrets/</a></p>
+<h3 id="openssl-brute-force"><a class="header" href="#openssl-brute-force">OpenSSL brute-force</a></h3>
+<ul>
+<li><a href="https://github.com/glv2/bruteforce-salted-openssl">https://github.com/glv2/bruteforce-salted-openssl</a></li>
+<li><a href="https://github.com/carlospolop/easy_BFopensslCTF">https://github.com/carlospolop/easy_BFopensslCTF</a></li>
+</ul>
+<h2 id="tools"><a class="header" href="#tools">Tools</a></h2>
+<ul>
+<li><a href="https://github.com/Ganapati/RsaCtfTool">https://github.com/Ganapati/RsaCtfTool</a></li>
+<li><a href="https://github.com/lockedbyte/cryptovenom">https://github.com/lockedbyte/cryptovenom</a></li>
+<li><a href="https://github.com/nccgroup/featherduster">https://github.com/nccgroup/featherduster</a></li>
+</ul>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+
+                        </main>
+
+                        <nav class="nav-wrapper" aria-label="Page navigation">
+                            <!-- Mobile navigation buttons -->
+                                <a rel="prev" href="../crypto-and-stego/cipher-block-chaining-cbc-mac-priv.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+
+                                <a rel="next prefetch" href="../crypto-and-stego/electronic-code-book-ecb.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+
+                            <div style="clear: both"></div>
+                        </nav>
+
+                        <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                <a rel="prev" href="../crypto-and-stego/cipher-block-chaining-cbc-mac-priv.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i><span style="font-size: medium; align-self: center; margin-left: 10px;">Cipher Block Chaining CBC-MAC</span>
+                                </a>
+
+                                <a rel="next prefetch" href="../crypto-and-stego/electronic-code-book-ecb.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <span style="font-size: medium; align-self: center; margin-right: 10px;">Electronic Code Book (ECB)</span><i class="fa fa-angle-right"></i>
+                                </a>
+                        </nav>
+                    </div>
+
+                    <div class="sidetoc">
+                        <div class="sidetoc-wrapper">
+                            <nav class="pagetoc"></nav>
+                            <a class="sidesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="sponsor-title">
+                                </div>
+                                <div class="sponsor-description">
+                                </div>
+                                <div class="sponsor-cta"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div id="theme-wrapper" class="theme-wrapper">
+                        <div id="theme-btns" class="theme-btns">
+                            <button id="hacktricks-light" type="button" role="radio" aria-label="Switch to light theme" aria-checked="false" class="theme">
+                                <i class="fa fa-sun-o"></i>
+                            </button>
+                            <button id="hacktricks-dark" type="button" role="radio" aria-label="Switch to dark theme" aria-checked="false" class="theme theme-selected">
+                                <i class="fa fa-moon-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <!--<script src="../searcher.js"></script>-->
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/pagetoc.js"></script>
+        <script src="../theme/tabs.js"></script>
+        <script src="../theme/ht_searcher.js"></script>
+        <script src="../theme/sponsor.js"></script>
+
+        <!-- Custom analytics -->
+        <script defer src="https://www.fairanalytics.de/pixel/deXeO7BNBrMuhdG1"></script>
+
+
+
+    </div>
+    </body>
+</html>

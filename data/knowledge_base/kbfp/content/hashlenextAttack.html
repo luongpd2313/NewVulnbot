@@ -1,0 +1,442 @@
+<!DOCTYPE HTML>
+<html lang="en" class="hacktricks-light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Hash Length Extension Attack - HackTricks</title>
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/pagetoc.css">
+        <link rel="stylesheet" href="../theme/tabs.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var lang = "en";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "hacktricks-dark" : "hacktricks-light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('hacktricks-light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            var body = document.querySelector("body");
+            if (document.body.clientWidth >= 550) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+            <div id="search-wrapper" class="hidden">
+                <div id="search-modal">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <span class="fa fa-search"></span>
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="menu-bar-container">
+                        <div class="left-buttons">
+                            <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </label>
+                            <a href="/">
+                                <h1 class="menu-title"><img src="../../../../../images/CLOUD-web-logo.png" alt="" style="width:auto;height:30px;vertical-align:middle;margin-right:5px;">HackTricks</h1>
+                            </a>
+
+                        </div>
+
+
+                        <div class="right-buttons">
+                            <div id="menubar-collapse">
+                                <a class="menu-bar-link" href="https://training.hacktricks.xyz" target="_blank">
+                                    Hacktricks Training
+                                </a>
+                                <a class="menu-bar-link" href="https://twitter.com/hacktricks_live" target="_blank">
+                                    Twitter
+                                </a>
+                                <a class="menu-bar-link" href="https://www.linkedin.com/company/hacktricks" target="_blank">
+                                    Linkedin
+                                </a>
+                                <a class="menu-bar-link" href="https://github.com/sponsors/carlospolop" target="_blank">
+                                    Sponsor
+                                </a>
+                            </div>
+                            <div class="icons">
+                                <div id="menubar-collapse-toggle" class="icon-button" type="button" title="Toggle menu bar" aria-label="Toggle Menu bar" aria-expanded="false" aria-controls="collapse">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                    <div id="menubar-collapse-popup" class="menubar-collapse-popup" aria-label="Menu" role="menu">
+                                        <a href="https://training.hacktricks.xyz" target="_blank" role="menuitem" class="menu-bar-link">Hacktricks Training</a>
+                                        <a href="https://twitter.com/hacktricks_live" target="_blank" role="menuitem" class="menu-bar-link">Twitter</a>
+                                        <a href="https://www.linkedin.com/company/hacktricks" target="_blank" role="menuitem" class="menu-bar-link">Linkedin</a>
+                                        <a href="https://github.com/sponsors/carlospolop" target="_blank" role="menuitem" class="menu-bar-link">Sponsor</a>
+                                    </div>
+                                </div>
+
+                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                    <i class="fa fa-search"></i>
+                                </button>
+
+                                <div id="menubar-languages-toggle" class="icon-button" type="button" title="Translations" aria-label="Toggle Tanslations" aria-expanded="false" aria-controls="translations">
+                                    <i class="fa fa-globe"></i>
+                                    <span class="menu-bar-link">Translations</span>
+                                    
+                                    <div id="menubar-languages-popup" class="menubar-languages-popup" aria-label="Language menu" role="language menu">
+                                        <button id="af" role="menuitem" class="menu-bar-link">Afrikaans</button>
+                                        <button id="zh" role="menuitem" class="menu-bar-link">Chinese</button>
+                                        <button id="en" role="menuitem" class="menu-bar-link">English</button>
+                                        <button id="fr" role="menuitem" class="menu-bar-link">French</button>
+                                        <button id="de" role="menuitem" class="menu-bar-link">German</button>
+                                        <button id="el" role="menuitem" class="menu-bar-link">Greek</button>
+                                        <button id="hi" role="menuitem" class="menu-bar-link">Hindi</button>
+                                        <button id="it" role="menuitem" class="menu-bar-link">Italian</button>
+                                        <button id="ja" role="menuitem" class="menu-bar-link">Japanese</button>
+                                        <button id="ko" role="menuitem" class="menu-bar-link">Korean</button>
+                                        <button id="pl" role="menuitem" class="menu-bar-link">Polish</button>
+                                        <button id="pt" role="menuitem" class="menu-bar-link">Portuguese</button>
+                                        <button id="sr" role="menuitem" class="menu-bar-link">Serbian</button>
+                                        <button id="es" role="menuitem" class="menu-bar-link">Spanish</button>
+                                        <button id="sw" role="menuitem" class="menu-bar-link">Swahili</button>
+                                        <button id="tr" role="menuitem" class="menu-bar-link">Turkish</button>
+                                        <button id="uk" role="menuitem" class="menu-bar-link">Ukrainian</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div id="container" class="container">
+                    <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+                        <!-- populated by js -->
+                        <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+                        <noscript>
+                            <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                        </noscript>
+                    </nav>
+                    <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                    <script>
+                        document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                        document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                        Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                            link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                        });
+                    </script>
+
+                    <div id="content" class="content">
+                        <main>
+                            <div class="mobilesponsor-wrapper">
+
+                            <a class="mobilesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="mobilesponsor-title">
+                                </div>
+                                <div class="mobilesponsor-description">
+                                </div>
+                                <div class="mobilesponsor-cta"></div>
+                            </a>
+                            </div>
+                            <style>
+.mdbook-alerts {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-left: 0.25em solid var(--mdbook-alerts-color);
+}
+
+.mdbook-alerts > *:first-child {
+  margin-top: 0;
+}
+
+.mdbook-alerts > *:last-child {
+  margin-bottom: 0;
+}
+
+.mdbook-alerts-title {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  line-height: 1;
+  color: var(--mdbook-alerts-color);
+  text-transform: capitalize;
+}
+
+.mdbook-alerts-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.2em;
+  background-color: currentColor;
+  -webkit-mask: no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+  -webkit-mask-image: var(--mdbook-alerts-icon);
+  mask-image: var(--mdbook-alerts-icon);
+}
+
+.mdbook-alerts-note {
+  --mdbook-alerts-color: rgb(9, 105, 218);
+  /* https://icon-sets.iconify.design/material-symbols/info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16v-4q0-.425-.288-.712T12 11q-.425 0-.712.288T11 12v4q0 .425.288.713T12 17m0-8q.425 0 .713-.288T13 8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8q0 .425.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-tip {
+  --mdbook-alerts-color: rgb(26, 127, 55);
+  /* https://icon-sets.iconify.design/material-symbols/lightbulb-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22m-3-3q-.425 0-.712-.288T8 18q0-.425.288-.712T9 17h6q.425 0 .713.288T16 18q0 .425-.288.713T15 19zm-.75-3q-1.725-1.025-2.738-2.75T4.5 9.5q0-3.125 2.188-5.312T12 2q3.125 0 5.313 2.188T19.5 9.5q0 2.025-1.012 3.75T15.75 16zm.6-2h6.3q1.125-.8 1.738-1.975T17.5 9.5q0-2.3-1.6-3.9T12 4Q9.7 4 8.1 5.6T6.5 9.5q0 1.35.613 2.525T8.85 14M12 14"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-important {
+  --mdbook-alerts-color: rgb(130, 80, 223);
+  /* https://icon-sets.iconify.design/material-symbols/chat-info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 7q.425 0 .713-.288T13 6q0-.425-.288-.712T12 5q-.425 0-.712.288T11 6q0 .425.288.713T12 7m0 8q.425 0 .713-.288T13 14v-4q0-.425-.288-.712T12 9q-.425 0-.712.288T11 10v4q0 .425.288.713T12 15m-6 3l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-warning {
+  --mdbook-alerts-color: rgb(154, 103, 0);
+  /* https://icon-sets.iconify.design/material-symbols/warning-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M2.725 21q-.275 0-.5-.137t-.35-.363q-.125-.225-.137-.488t.137-.512l9.25-16q.15-.25.388-.375T12 3q.25 0 .488.125t.387.375l9.25 16q.15.25.138.513t-.138.487q-.125.225-.35.363t-.5.137zm1.725-2h15.1L12 6zM12 18q.425 0 .713-.288T13 17q0-.425-.288-.712T12 16q-.425 0-.712.288T11 17q0 .425.288.713T12 18m0-3q.425 0 .713-.288T13 14v-3q0-.425-.288-.712T12 10q-.425 0-.712.288T11 11v3q0 .425.288.713T12 15m0-2.5"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-caution {
+  --mdbook-alerts-color: rgb(207, 34, 46);
+  /* https://icon-sets.iconify.design/material-symbols/brightness-alert-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16q0-.425-.288-.712T12 15q-.425 0-.712.288T11 16q0 .425.288.713T12 17m0-4q.425 0 .713-.288T13 12V8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8v4q0 .425.288.713T12 13m-3.35 7H6q-.825 0-1.412-.587T4 18v-2.65L2.075 13.4q-.275-.3-.425-.662T1.5 12q0-.375.15-.737t.425-.663L4 8.65V6q0-.825.588-1.412T6 4h2.65l1.95-1.925q.3-.275.663-.425T12 1.5q.375 0 .738.15t.662.425L15.35 4H18q.825 0 1.413.588T20 6v2.65l1.925 1.95q.275.3.425.663t.15.737q0 .375-.15.738t-.425.662L20 15.35V18q0 .825-.587 1.413T18 20h-2.65l-1.95 1.925q-.3.275-.662.425T12 22.5q-.375 0-.737-.15t-.663-.425zm.85-2l2.5 2.5l2.5-2.5H18v-3.5l2.5-2.5L18 9.5V6h-3.5L12 3.5L9.5 6H6v3.5L3.5 12L6 14.5V18zm2.5-6"%2F%3E%3C%2Fsvg%3E');
+}
+
+</style>
+<style>
+div.codeblock_filename_container + pre {
+  margin-top: 0;
+}
+
+span.codeblock_filename_inner {
+  border-radius: 0.4rem 0.4rem 0 0;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  font-family: var(--mono-font) !important;
+  font-size: var(--code-font-size);
+}
+
+</style>
+<h1 id="hash-length-extension-attack"><a class="header" href="#hash-length-extension-attack">Hash Length Extension Attack</a></h1>
+<p>Reading time: 2 minutes</p>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+<h2 id="summary-of-the-attack"><a class="header" href="#summary-of-the-attack">Summary of the attack</a></h2>
+<p>Imagine a server which is <strong>signing</strong> some <strong>data</strong> by <strong>appending</strong> a <strong>secret</strong> to some known clear text data and then hashing that data. If you know:</p>
+<ul>
+<li><strong>The length of the secret</strong> (this can be also bruteforced from a given length range)</li>
+<li><strong>The clear text data</strong></li>
+<li><strong>The algorithm (and it's vulnerable to this attack)</strong></li>
+<li><strong>The padding is known</strong>
+<ul>
+<li>Usually a default one is used, so if the other 3 requirements are met, this also is</li>
+<li>The padding vary depending on the length of the secret+data, that's why the length of the secret is needed</li>
+</ul>
+</li>
+</ul>
+<p>Then, it's possible for an <strong>attacker</strong> to <strong>append</strong> <strong>data</strong> and <strong>generate</strong> a valid <strong>signature</strong> for the <strong>previous data + appended data</strong>.</p>
+<h3 id="how"><a class="header" href="#how">How?</a></h3>
+<p>Basically the vulnerable algorithms generate the hashes by firstly <strong>hashing a block of data</strong>, and then, <strong>from</strong> the <strong>previously</strong> created <strong>hash</strong> (state), they <strong>add the next block of data</strong> and <strong>hash it</strong>.</p>
+<p>Then, imagine that the secret is "secret" and the data is "data", the MD5 of "secretdata" is 6036708eba0d11f6ef52ad44e8b74d5b.<br />
+If an attacker wants to append the string "append" he can:</p>
+<ul>
+<li>Generate a MD5 of 64 "A"s</li>
+<li>Change the state of the previously initialized hash to 6036708eba0d11f6ef52ad44e8b74d5b</li>
+<li>Append the string "append"</li>
+<li>Finish the hash and the resulting hash will be a <strong>valid one for "secret" + "data" + "padding" + "append"</strong></li>
+</ul>
+<h3 id="tool"><a class="header" href="#tool"><strong>Tool</strong></a></h3>
+<p><a class="content_ref" href="https://github.com/iagox86/hash_extender"><span class="content_ref_label">GitHub - iagox86/hash_extender</span></a></p>
+<h3 id="references"><a class="header" href="#references">References</a></h3>
+<p>You can find this attack good explained in <a href="https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks">https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks</a></p>
+<div class="mdbook-alerts mdbook-alerts-tip">
+<p class="mdbook-alerts-title">
+  <span class="mdbook-alerts-icon"></span>
+  tip
+</p>
+<p>Learn &amp; practice AWS Hacking:<img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/arte"><strong>HackTricks Training AWS Red Team Expert (ARTE)</strong></a><img src="../../../../../images/arte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><br />
+Learn &amp; practice GCP Hacking: <img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"><a href="https://training.hacktricks.xyz/courses/grte"><strong>HackTricks Training GCP Red Team Expert (GRTE)</strong></a><img src="../../../../../images/grte.png" alt="" style="width:auto;height:24px;vertical-align:middle;"></p>
+<details>
+<summary>Support HackTricks</summary>
+<ul>
+<li>Check the <a href="https://github.com/sponsors/carlospolop"><strong>subscription plans</strong></a>!</li>
+<li><strong>Join the</strong> 💬 <a href="https://discord.gg/hRep4RUj7f"><strong>Discord group</strong></a> or the <a href="https://t.me/peass"><strong>telegram group</strong></a> or <strong>follow</strong> us on <strong>Twitter</strong> 🐦 <a href="https://twitter.com/hacktricks_live"><strong>@hacktricks_live</strong></a><strong>.</strong></li>
+<li><strong>Share hacking tricks by submitting PRs to the</strong> <a href="https://github.com/carlospolop/hacktricks"><strong>HackTricks</strong></a> and <a href="https://github.com/carlospolop/hacktricks-cloud"><strong>HackTricks Cloud</strong></a> github repos.</li>
+</ul>
+</details>
+</div>
+
+                        </main>
+
+                        <nav class="nav-wrapper" aria-label="Page navigation">
+                            <!-- Mobile navigation buttons -->
+                                <a rel="prev" href="../crypto-and-stego/electronic-code-book-ecb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+
+                                <a rel="next prefetch" href="../crypto-and-stego/padding-oracle-priv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+
+                            <div style="clear: both"></div>
+                        </nav>
+
+                        <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                <a rel="prev" href="../crypto-and-stego/electronic-code-book-ecb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <i class="fa fa-angle-left"></i><span style="font-size: medium; align-self: center; margin-left: 10px;">Electronic Code Book (ECB)</span>
+                                </a>
+
+                                <a rel="next prefetch" href="../crypto-and-stego/padding-oracle-priv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <span style="font-size: medium; align-self: center; margin-right: 10px;">Padding Oracle</span><i class="fa fa-angle-right"></i>
+                                </a>
+                        </nav>
+                    </div>
+
+                    <div class="sidetoc">
+                        <div class="sidetoc-wrapper">
+                            <nav class="pagetoc"></nav>
+                            <a class="sidesponsor" href="" target="_blank">
+                                <img src="" alt="" srcset="">
+                                <div class="sponsor-title">
+                                </div>
+                                <div class="sponsor-description">
+                                </div>
+                                <div class="sponsor-cta"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div id="theme-wrapper" class="theme-wrapper">
+                        <div id="theme-btns" class="theme-btns">
+                            <button id="hacktricks-light" type="button" role="radio" aria-label="Switch to light theme" aria-checked="false" class="theme">
+                                <i class="fa fa-sun-o"></i>
+                            </button>
+                            <button id="hacktricks-dark" type="button" role="radio" aria-label="Switch to dark theme" aria-checked="false" class="theme theme-selected">
+                                <i class="fa fa-moon-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <!--<script src="../searcher.js"></script>-->
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/pagetoc.js"></script>
+        <script src="../theme/tabs.js"></script>
+        <script src="../theme/ht_searcher.js"></script>
+        <script src="../theme/sponsor.js"></script>
+
+        <!-- Custom analytics -->
+        <script defer src="https://www.fairanalytics.de/pixel/deXeO7BNBrMuhdG1"></script>
+
+
+
+    </div>
+    </body>
+</html>
